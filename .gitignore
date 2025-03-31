@@ -1,0 +1,22 @@
+# Dart関連の一般的な除外項目
+.dart_tool/
+.packages
+pubspec.lock
+
+# 生成されたアプリアイコン
+build/
+
+# Dartコンパイル出力
+*.exe
+*.dll
+*.so
+*.dylib
+app_icon_gen
+
+# OS生成ファイル
+.DS_Store
+Thumbs.db
+
+# エディタ設定
+.idea/
+.vscode/
