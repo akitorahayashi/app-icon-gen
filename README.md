@@ -32,20 +32,25 @@
 
 ## Directory Structure
 ```
+app-icon-gen.sh             # 実行用のシェルスクリプト
+
 lib/
-├── app_icon_generator.dart  # メインのジェネレーター
-├── cli.dart                 # コマンドライン処理
-├── model/                   # データモデル
-│   └── icon_template.dart   # アイコンテンプレートモデル
-└── platform/               # プラットフォーム固有の処理
-    ├── android_icon_generator.dart  # Android用ジェネレーター
-    └── ios_icon_generator.dart      # iOS用ジェネレーター
+├── app_icon_generator.dart  
+├── cli.dart                 
+├── model/                   
+│   └── icon_template.dart   
+└── platform/               
+    ├── android_icon_generator.dart  
+    └── ios_icon_generator.dart      
 
 bin/
-└── app_icon_gen.dart       # エントリーポイント
+└── app_icon_gen.dart       
 
 test/
-└── icon_generator_test.dart # テストコード
+└── icon_generator_test.dart 
+
+assets/
+└── icon_gen_sample.png     
 ```
 
 ## Installation
