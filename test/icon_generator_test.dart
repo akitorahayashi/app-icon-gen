@@ -7,21 +7,10 @@ import 'package:test/test.dart';
 
 void main() {
   group('Icon Generator Tests', () {
-    late Directory tempDir;
-    late String testImagePath;
-
-    setUpAll(() {
-      // 一時ディレクトリとテスト画像を作成
-      tempDir = Directory.systemTemp.createTempSync('icon_gen_test_');
-      testImagePath = _createTestImage(tempDir);
-    });
+    // サンプル画像のパス
+    final String sampleImagePath = 'assets/icon_gen_sample.png';
 
     tearDownAll(() {
-      // クリーンアップ
-      if (tempDir.existsSync()) {
-        tempDir.deleteSync(recursive: true);
-      }
-
       // 生成された出力ディレクトリを削除
       final iosOutputDir = Directory('build/ios');
       if (iosOutputDir.existsSync()) {
@@ -36,7 +25,7 @@ void main() {
 
     test('プラットフォームがiosの場合、iOSアイコンが生成されるべき', () {
       // iOS用のアイコンを生成
-      AppIconGenerator.generateIcons(testImagePath, 'ios');
+      AppIconGenerator.generateIcons(sampleImagePath, 'ios');
 
       final iosOutputDir = Directory('build/ios/AppIcon.appiconset');
       expect(iosOutputDir.existsSync(), isTrue);
@@ -68,7 +57,7 @@ void main() {
 
     test('プラットフォームがandroidの場合、Androidアイコンが生成されるべき', () {
       // Android用のアイコンを生成
-      AppIconGenerator.generateIcons(testImagePath, 'android');
+      AppIconGenerator.generateIcons(sampleImagePath, 'android');
 
       final androidBaseDir = Directory('build/android');
       expect(androidBaseDir.existsSync(), isTrue);
@@ -117,7 +106,7 @@ void main() {
 
     test('プラットフォームがbothの場合、iOSとAndroid両方のアイコンが生成されるべき', () {
       // 両プラットフォーム用のアイコンを生成
-      AppIconGenerator.generateIcons(testImagePath, 'both');
+      AppIconGenerator.generateIcons(sampleImagePath, 'both');
 
       // iOS出力を確認
       final iosOutputDir = Directory('build/ios/AppIcon.appiconset');
@@ -135,34 +124,27 @@ void main() {
           throwsA(isA<Exception>().having(
               (e) => e.toString(), 'message', contains('入力ファイルが見つかりません'))));
     });
+
+    test('シェルスクリプトで実行した場合もアイコンが生成されるべき', () {
+      // 既存のビルドディレクトリをクリア
+      final iosOutputDir = Directory('build/ios');
+      if (iosOutputDir.existsSync()) {
+        iosOutputDir.deleteSync(recursive: true);
+      }
+
+      // シェルスクリプトを実行
+      final result = Process.runSync(
+        './app-icon-gen.sh',
+        ['-p', 'ios', sampleImagePath],
+      );
+
+      expect(result.exitCode, equals(0), reason: '${result.stderr}');
+      expect(iosOutputDir.existsSync(), isTrue, reason: 'iOSビルドディレクトリが見つかりません');
+
+      // Contents.jsonが生成されたことを確認
+      final contentsFile = File(
+          path.join(iosOutputDir.path, 'AppIcon.appiconset', 'Contents.json'));
+      expect(contentsFile.existsSync(), isTrue);
+    });
   });
-}
-
-/// テスト画像を作成してそのファイルパスを返す
-String _createTestImage(Directory tempDir) {
-  // テスト用に512x512の画像を作成
-  final image = img.Image(width: 512, height: 512);
-
-  // カラーグラデーションで塗りつぶす
-  for (var y = 0; y < image.height; y++) {
-    for (var x = 0; x < image.width; x++) {
-      final r = (x * 255 ~/ image.width).clamp(0, 255);
-      final g = (y * 255 ~/ image.height).clamp(0, 255);
-      final b = 128;
-      image.setPixel(x, y, img.ColorRgb8(r, g, b));
-    }
-  }
-
-  // 中央に白い円を追加
-  img.fillCircle(image,
-      x: image.width ~/ 2,
-      y: image.height ~/ 2,
-      radius: image.width ~/ 4,
-      color: img.ColorRgb8(255, 255, 255));
-
-  // 画像を保存
-  final outputPath = path.join(tempDir.path, 'test_icon.png');
-  File(outputPath).writeAsBytesSync(img.encodePng(image));
-
-  return outputPath;
 }

@@ -57,43 +57,38 @@ test/
 ### Clone Repository
 
 ```bash
-$ git clone https://github.com/yourusername/app_icon_gen.git
+$ git clone https://github.com/akitorahayashi/app_icon_gen.git
 $ cd app_icon_gen
 $ dart pub get
+$ chmod +x app-icon-gen.sh  # シェルスクリプトに実行権限を付与
 ```
 
 ## Preparing Your Icon
 
-ツールを使用する前に、ソース画像を準備する必要があります：
-
-1. アプリアイコン用の正方形のPNG画像を作成または入手してください（推奨サイズ：1024x1024ピクセル）
-2. プロジェクト内の `assets` ディレクトリに画像を配置してください
+1. アプリアイコン用の正方形のPNG画像を作成または入手（1024x1024ピクセル）
+2. プロジェクト内の `assets` ディレクトリに画像を配置
 
 ## Usage
 
-### Basic usage
-
-アイコンを生成するには、次のコマンドを実行します：
-
 ```bash
-$ dart run bin/app_icon_gen.dart assets/your_icon.png
+$ ./app-icon-gen.sh assets/your_icon.png
 ```
 
 ### Examples
 
-**iOSアイコンのみ生成：**
+**iOSアイコンのみ生成**
 ```bash
-$ dart run bin/app_icon_gen.dart -p ios assets/your_icon.png
+$ ./app-icon-gen.sh -p ios assets/your_icon.png
 ```
 
-**Androidアイコンのみ生成：**
+**Androidアイコンのみ生成**
 ```bash
-$ dart run bin/app_icon_gen.dart -p android assets/your_icon.png
+$ ./app-icon-gen.sh -p android assets/your_icon.png
 ```
 
 **両プラットフォーム用アイコンを生成：**
 ```bash
-$ dart run bin/app_icon_gen.dart assets/your_icon.png
+$ ./app-icon-gen.sh assets/your_icon.png
 ```
 
 生成されたすべてのアイコンは、プロジェクトの `build/` ディレクトリに保存されます。
@@ -129,3 +124,4 @@ build/android/
 └── playstore/
     └── play_store_icon.png
 ```
+
