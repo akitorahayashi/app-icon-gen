@@ -1,8 +1,5 @@
 import 'dart:io';
 import 'package:image/image.dart' as img;
-import 'package:path/path.dart' as path;
-import '../model/icon_template.dart';
-import '../model/android_icon_template.dart';
 
 /// Android向けアイコン生成クラス
 class AndroidIconGenerator {
@@ -72,18 +69,16 @@ class AndroidIconGenerator {
       final resized = img.copyResize(originalImage, width: size, height: size);
       final outputPath = 'build/android/mipmap-$density/ic_launcher.png';
 
-      // テンプレートを作成
-      final template = AndroidIconTemplate(
-        size: size.toDouble(),
-        scale: 1,
-        idiom: 'android',
-        filename: 'ic_launcher.png',
-        density: density,
-      );
-
       // ファイルに保存
       File(outputPath).writeAsBytesSync(img.encodePng(resized));
       print('Androidアイコン作成: mipmap-$density/ic_launcher.png (${size}x$size)');
+
+      // round版も作成
+      final roundOutputPath =
+          'build/android/mipmap-$density/ic_launcher_round.png';
+      File(roundOutputPath).writeAsBytesSync(img.encodePng(resized));
+      print(
+          'Android Roundアイコン作成: mipmap-$density/ic_launcher_round.png (${size}x$size)');
 
       // アダプティブアイコンも作成
       _generateAdaptiveIconsForDensity(originalImage, density);
@@ -157,14 +152,6 @@ class AndroidIconGenerator {
   static void _generatePlayStoreIcon(img.Image originalImage) {
     final size = _playStoreIconSize;
     final resized = img.copyResize(originalImage, width: size, height: size);
-
-    // テンプレートを作成
-    final template = AndroidIconTemplate(
-      size: size.toDouble(),
-      scale: 1,
-      idiom: 'android-marketing',
-      filename: 'play_store_icon.png',
-    );
 
     final output = 'build/android/playstore/play_store_icon.png';
     File(output).writeAsBytesSync(img.encodePng(resized));

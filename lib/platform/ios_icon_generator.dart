@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as path;
-import '../model/icon_template.dart';
 import '../model/ios_icon_template.dart';
 
 /// iOS向けアイコン生成クラス
@@ -62,9 +61,9 @@ class IOSIconGenerator {
       String filename = '';
       if (template.appearance != null) {
         final appearanceValue = template.appearance!['value'] ?? 'unknown';
-        filename = 'AppIcon-${width}x${height}-${appearanceValue}.png';
+        filename = 'AppIcon-$width' 'x' '$height-$appearanceValue.png';
       } else {
-        filename = 'AppIcon-${width}x${height}.png';
+        filename = 'AppIcon-$width' 'x' '$height.png';
       }
 
       final filePath = path.join(outputDir.path, filename);
@@ -80,7 +79,7 @@ class IOSIconGenerator {
       }
       images.add(imageMap);
 
-      print('iOS用最新形式アイコン作成: $filename (${width}x$height)');
+      print('iOS用最新形式アイコン作成: $filename ($width' 'x' '$height)');
     }
 
     // Contents.jsonを生成
