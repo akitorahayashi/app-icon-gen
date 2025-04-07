@@ -50,17 +50,17 @@
 ## Directory Structure
 ```
 app_icon_gen
-├── app-icon-gen.sh           # 実行用のシェルスクリプト
+├── app-icon-gen.sh         
 ├── bin/
-│   └── app_icon_gen.dart     # エントリーポイント
+│   └── app_icon_gen.dart    
 ├── lib/
-│   ├── command_line_runner.dart  # CLIツールのメイン処理
+│   ├── command_line_runner.dart 
 │   ├── model/
-│   │   └── watchos_icon_template.dart  # watchOS用テンプレート
+│   │   └── watchos_icon_template.dart 
 │   └── generator/
-│       ├── android_icon_generator.dart  # Android用アイコン生成
-│       ├── ios_icon_generator.dart      # iOS用アイコン生成
-│       └── watchos_icon_generator.dart  # watchOS用アイコン生成
+│       ├── android_icon_generator.dart 
+│       ├── ios_icon_generator.dart     
+│       └── watchos_icon_generator.dart  
 ├── test/
 │   ├── android_icon_generator_test.dart
 │   ├── ios_icon_generator_test.dart
