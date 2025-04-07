@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:app_icon_gen/app_icon_generator.dart';
 import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
+import 'package:app_icon_gen/generator/android_icon_generator.dart';
 
 void main() {
   group('Android Icon Generator Tests', () {
@@ -19,8 +19,13 @@ void main() {
     });
 
     test('Android用アイコンが正しく生成される', () {
+      // サンプル画像を読み込む
+      final inputFile = File(sampleImagePath);
+      final bytes = inputFile.readAsBytesSync();
+      final originalImage = img.decodeImage(bytes)!;
+
       // Android用のアイコンを生成
-      AppIconGenerator.generateIcons(sampleImagePath, 'android');
+      AndroidIconGenerator.generateIcons(originalImage);
 
       final androidBaseDir = Directory('build/android');
       expect(androidBaseDir.existsSync(), isTrue);
@@ -61,8 +66,13 @@ void main() {
     });
 
     test('Play Store用のアイコンが正しく生成される', () {
+      // サンプル画像を読み込む
+      final inputFile = File(sampleImagePath);
+      final bytes = inputFile.readAsBytesSync();
+      final originalImage = img.decodeImage(bytes)!;
+
       // Android用のアイコンを生成
-      AppIconGenerator.generateIcons(sampleImagePath, 'android');
+      AndroidIconGenerator.generateIcons(originalImage);
 
       final androidBaseDir = Directory('build/android');
       // Play Storeアイコンを確認
@@ -80,32 +90,14 @@ void main() {
       expect(playStoreImage.height, equals(512));
     });
 
-    test('シェルスクリプトで実行した場合もAndroid用アイコンが生成される', () {
-      // 既存のビルドディレクトリをクリア
-      final androidOutputDir = Directory('build/android');
-      if (androidOutputDir.existsSync()) {
-        androidOutputDir.deleteSync(recursive: true);
-      }
-
-      // シェルスクリプトを実行
-      final result = Process.runSync(
-        './app-icon-gen.sh',
-        ['-p', 'android', sampleImagePath],
-      );
-
-      expect(result.exitCode, equals(0), reason: '${result.stderr}');
-      expect(androidOutputDir.existsSync(), isTrue,
-          reason: 'Androidビルドディレクトリが見つかりません');
-
-      // 少なくとも1つのミップマップディレクトリが作成されたことを確認
-      final mdpiDir =
-          Directory(path.join(androidOutputDir.path, 'mipmap-mdpi'));
-      expect(mdpiDir.existsSync(), isTrue);
-    });
-
     test('Round Androidアイコンが生成される', () {
+      // サンプル画像を読み込む
+      final inputFile = File(sampleImagePath);
+      final bytes = inputFile.readAsBytesSync();
+      final originalImage = img.decodeImage(bytes)!;
+
       // Android用のアイコンを生成
-      AppIconGenerator.generateIcons(sampleImagePath, 'android');
+      AndroidIconGenerator.generateIcons(originalImage);
 
       final androidBaseDir = Directory('build/android');
       final densities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];

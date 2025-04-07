@@ -1,8 +1,11 @@
 import 'dart:io';
 import 'package:args/args.dart';
 import 'package:path/path.dart' as path;
+import 'package:image/image.dart' as img;
 
-import 'app_icon_generator.dart';
+import 'platform/android_icon_generator.dart';
+import 'platform/ios_icon_generator.dart';
+import 'platform/watchos_icon_generator.dart';
 
 void run(List<String> arguments) {
   final parser = ArgParser()
@@ -53,7 +56,32 @@ void run(List<String> arguments) {
       }
     }
 
-    AppIconGenerator.generateIcons(inputPath, platform);
+    // 入力画像を読み込む
+    final inputFile = File(inputPath);
+    final bytes = inputFile.readAsBytesSync();
+    final originalImage = img.decodeImage(bytes);
+    if (originalImage == null) {
+      throw Exception('画像のデコードに失敗しました。');
+    }
+
+    print('画像を処理中: $inputPath');
+
+    // プラットフォームごとに処理
+    switch (platform) {
+      case 'ios':
+        IOSIconGenerator.generateIcons(originalImage);
+        break;
+      case 'android':
+        AndroidIconGenerator.generateIcons(originalImage);
+        break;
+      case 'watchos':
+        WatchOSIconGenerator.generateIcons(originalImage);
+        break;
+      default:
+        throw Exception(
+            'サポートされていないプラットフォーム: $platform\n有効なプラットフォーム: ios, android, watchos');
+    }
+
     print('アイコン生成が正常に完了しました！');
   } on FormatException catch (e) {
     print('エラー: コマンドライン引数の解析に失敗しました: $e');

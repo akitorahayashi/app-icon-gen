@@ -49,29 +49,24 @@
 
 ## Directory Structure
 ```
-app-icon-gen.sh             # 実行用のシェルスクリプト
-
-lib/
-├── app_icon_generator.dart  
-├── command_line_runner.dart                 
-├── model/                   
-│   ├── ios_icon_template.dart    # iOS用テンプレート
-│   └── watchos_icon_template.dart # watchOS用テンプレート
-└── platform/               
-    ├── android_icon_generator.dart  
-    ├── ios_icon_generator.dart      
-    └── watchos_icon_generator.dart  
-
-bin/
-└── app_icon_gen.dart       
-
-test/
-├── android_icon_generator_test.dart
-├── ios_icon_generator_test.dart
-└── watchos_icon_generator_test.dart
-
-assets/
-└── icon_gen_sample.png     
+app_icon_gen
+├── app-icon-gen.sh           # 実行用のシェルスクリプト
+├── bin/
+│   └── app_icon_gen.dart     # エントリーポイント
+├── lib/
+│   ├── command_line_runner.dart  # CLIツールのメイン処理
+│   ├── model/
+│   │   └── watchos_icon_template.dart  # watchOS用テンプレート
+│   └── generator/
+│       ├── android_icon_generator.dart  # Android用アイコン生成
+│       ├── ios_icon_generator.dart      # iOS用アイコン生成
+│       └── watchos_icon_generator.dart  # watchOS用アイコン生成
+├── test/
+│   ├── android_icon_generator_test.dart
+│   ├── ios_icon_generator_test.dart
+│   └── watchos_icon_generator_test.dart
+└── assets/
+    └── icon_gen_sample.png   # サンプルアイコン
 ```
 
 ## Installation
@@ -91,7 +86,7 @@ $ chmod +x app-icon-gen.sh  # 実行権限を付与
 
 ## Preparing Your Icon
 
-1. アプリアイコン用の正方形のPNG画像を作成または入手（1024x1024ピクセル）
+1. アプリアイコン用の正方形のPNG画像を作成または入手（推奨：1024x1024ピクセル）
 2. プロジェクト内の `assets` ディレクトリに画像を配置
 
 ## Usage

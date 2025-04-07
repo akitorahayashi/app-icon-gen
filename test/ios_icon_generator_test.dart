@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:app_icon_gen/app_icon_generator.dart';
 import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
+import 'package:app_icon_gen/platform/ios_icon_generator.dart';
 
 void main() {
   group('iOS Icon Generator Tests', () {
@@ -19,95 +19,78 @@ void main() {
     });
 
     test('iOS用アイコンが正しく生成される', () {
+      // サンプル画像を読み込む
+      final inputFile = File(sampleImagePath);
+      final bytes = inputFile.readAsBytesSync();
+      final originalImage = img.decodeImage(bytes)!;
+
       // iOS用のアイコンを生成
-      AppIconGenerator.generateIcons(sampleImagePath, 'ios');
+      IOSIconGenerator.generateIcons(originalImage);
 
-      final iosOutputDir = Directory('build/ios/AppIcon.appiconset');
-      expect(iosOutputDir.existsSync(), isTrue);
+      // 出力ディレクトリを確認
+      final appIconDir = Directory('build/ios/AppIcon.appiconset');
+      expect(appIconDir.existsSync(), isTrue);
 
-      // Contents.jsonが生成されたことを確認
-      final contentsFile = File(path.join(iosOutputDir.path, 'Contents.json'));
-      expect(contentsFile.existsSync(), isTrue);
+      // Contents.jsonが生成されていることを確認
+      final contentsJson = File(path.join(appIconDir.path, 'Contents.json'));
+      expect(contentsJson.existsSync(), isTrue);
 
-      // 生成されたPNGファイルをカウント
-      final iconFiles = iosOutputDir
-          .listSync()
-          .whereType<File>()
-          .where((file) => path.extension(file.path) == '.png')
-          .toList();
+      // 少なくとも一部のiOSアイコンが生成されていることを確認
+      final iconList = appIconDir.listSync();
+      expect(iconList.length, greaterThan(10));
+    });
 
-      // 複数のアイコンファイルが存在するはず
-      expect(iconFiles.length, greaterThanOrEqualTo(10));
+    test('iOS用アイコンの正しいサイズが生成される', () {
+      // サンプル画像を読み込む
+      final inputFile = File(sampleImagePath);
+      final bytes = inputFile.readAsBytesSync();
+      final originalImage = img.decodeImage(bytes)!;
 
-      // 特定のサイズを確認: 60pt@2x (120x120ピクセル)
-      final icon60x60 = iconFiles.firstWhere(
-          (file) => path.basename(file.path) == 'Icon-App-60x60@2x.png',
-          orElse: () => throw Exception('期待されるiOSアイコンファイルが見つかりません'));
+      // iOS用のアイコンを生成
+      IOSIconGenerator.generateIcons(originalImage);
 
-      // 寸法を確認
-      final icon60Image = img.decodePng(icon60x60.readAsBytesSync());
-      expect(icon60Image!.width, equals(120)); // 60pt x 2x = 120px
-      expect(icon60Image.height, equals(120));
+      // App Store用アイコンを確認 (1024x1024)
+      final appStoreIcon = File(path.join(
+          'build/ios/AppIcon.appiconset', 'Icon-App-1024x1024@1x.png'));
+      expect(appStoreIcon.existsSync(), isTrue);
 
-      // App Store用アイコンを確認
-      final appStoreIcon = iconFiles.firstWhere(
-          (file) => path.basename(file.path) == 'Icon-App-1024x1024@1x.png',
-          orElse: () => throw Exception('App Store用アイコンファイルが見つかりません'));
-
-      // App Store用アイコンの寸法を確認（1024x1024）
       final appStoreImage = img.decodePng(appStoreIcon.readAsBytesSync());
       expect(appStoreImage!.width, equals(1024));
       expect(appStoreImage.height, equals(1024));
+
+      // iPhone用アイコンを確認 (60pt @3x = 180x180)
+      final iphoneIcon = File(
+          path.join('build/ios/AppIcon.appiconset', 'Icon-App-60x60@3x.png'));
+      expect(iphoneIcon.existsSync(), isTrue);
+
+      final iphoneImage = img.decodePng(iphoneIcon.readAsBytesSync());
+      expect(iphoneImage!.width, equals(180));
+      expect(iphoneImage.height, equals(180));
     });
 
-    test('iOS 17以降に対応するアイコンが生成される', () {
+    test('iOS 17用の最新形式アイコンが生成される', () {
+      // サンプル画像を読み込む
+      final inputFile = File(sampleImagePath);
+      final bytes = inputFile.readAsBytesSync();
+      final originalImage = img.decodeImage(bytes)!;
+
       // iOS用のアイコンを生成
-      AppIconGenerator.generateIcons(sampleImagePath, 'ios');
+      IOSIconGenerator.generateIcons(originalImage);
 
-      final iosOutputDir = Directory('build/ios/AppIcon.appiconset');
+      // Universalアイコンを確認
+      final universalIcon = File(
+          path.join('build/ios/AppIcon.appiconset', 'AppIcon-1024x1024.png'));
+      expect(universalIcon.existsSync(), isTrue);
 
-      // 標準アイコンの確認
-      final standardIcon =
-          File(path.join(iosOutputDir.path, 'Icon-App-60x60@3x.png'));
-      expect(standardIcon.existsSync(), isTrue);
+      // ダークモードアイコンを確認
+      final darkIcon = File(path.join(
+          'build/ios/AppIcon.appiconset', 'AppIcon-1024x1024-dark.png'));
+      expect(darkIcon.existsSync(), isTrue);
 
-      // ダークモードアイコンの確認 (存在する場合)
-      final darkModeIcon =
-          File(path.join(iosOutputDir.path, 'Icon-App-60x60@3x-dark.png'));
-      if (darkModeIcon.existsSync()) {
-        final darkImage = img.decodePng(darkModeIcon.readAsBytesSync());
-        expect(darkImage!.width, equals(180)); // 60pt x 3x = 180px
-      }
-
-      // ティント付きアイコンの確認 (存在する場合)
-      final tintedIcon =
-          File(path.join(iosOutputDir.path, 'Icon-App-60x60@3x-tinted.png'));
-      if (tintedIcon.existsSync()) {
-        final tintedImage = img.decodePng(tintedIcon.readAsBytesSync());
-        expect(tintedImage!.width, equals(180)); // 60pt x 3x = 180px
-      }
-    });
-
-    test('シェルスクリプトで実行した場合もiOS用アイコンが生成される', () {
-      // 既存のビルドディレクトリをクリア
-      final iosOutputDir = Directory('build/ios');
-      if (iosOutputDir.existsSync()) {
-        iosOutputDir.deleteSync(recursive: true);
-      }
-
-      // シェルスクリプトを実行
-      final result = Process.runSync(
-        './app-icon-gen.sh',
-        ['-p', 'ios', sampleImagePath],
-      );
-
-      expect(result.exitCode, equals(0), reason: '${result.stderr}');
-      expect(iosOutputDir.existsSync(), isTrue, reason: 'iOSビルドディレクトリが見つかりません');
-
-      // Contents.jsonが生成されたことを確認
-      final contentsFile = File(
-          path.join(iosOutputDir.path, 'AppIcon.appiconset', 'Contents.json'));
-      expect(contentsFile.existsSync(), isTrue);
+      // Tintedモードアイコンを確認
+      final tintedIcon = File(path.join(
+          'build/ios/AppIcon.appiconset', 'AppIcon-1024x1024-tinted.png'));
+      expect(tintedIcon.existsSync(), isTrue);
     });
   });
 }

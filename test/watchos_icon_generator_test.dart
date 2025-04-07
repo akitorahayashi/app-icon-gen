@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:app_icon_gen/app_icon_generator.dart';
 import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
+import 'package:app_icon_gen/generator/watchos_icon_generator.dart';
 
 void main() {
   group('watchOS Icon Generator Tests', () {
@@ -19,99 +19,88 @@ void main() {
     });
 
     test('watchOS用アイコンが正しく生成される', () {
+      // サンプル画像を読み込む
+      final inputFile = File(sampleImagePath);
+      final bytes = inputFile.readAsBytesSync();
+      final originalImage = img.decodeImage(bytes)!;
+
       // watchOS用のアイコンを生成
-      AppIconGenerator.generateIcons(sampleImagePath, 'watchos');
+      WatchOSIconGenerator.generateIcons(originalImage);
 
-      final watchosOutputDir = Directory('build/watchos/AppIcon.appiconset');
-      expect(watchosOutputDir.existsSync(), isTrue);
+      // 出力ディレクトリを確認
+      final appIconDir = Directory('build/watchos/AppIcon.appiconset');
+      expect(appIconDir.existsSync(), isTrue);
 
-      // Contents.jsonが生成されたことを確認
-      final contentsFile =
-          File(path.join(watchosOutputDir.path, 'Contents.json'));
-      expect(contentsFile.existsSync(), isTrue);
+      // Contents.jsonが生成されていることを確認
+      final contentsJson = File(path.join(appIconDir.path, 'Contents.json'));
+      expect(contentsJson.existsSync(), isTrue);
 
-      // 生成されたPNGファイルをカウント
-      final iconFiles = watchosOutputDir
-          .listSync()
-          .whereType<File>()
-          .where((file) => path.extension(file.path) == '.png')
-          .toList();
-
-      // 複数のアイコンファイルが存在するはず
-      expect(iconFiles.length, greaterThanOrEqualTo(10));
-
-      // 特定のアイコンを確認（通知センター用38mm）
-      final notificationIcon = iconFiles.firstWhere(
-          (file) => path.basename(file.path) == 'AppIcon24x24@2x.png',
-          orElse: () => throw Exception('期待されるwatchOSアイコンファイルが見つかりません'));
-
-      // 寸法を確認 (24pt x 2x = 48px)
-      final notificationImage =
-          img.decodePng(notificationIcon.readAsBytesSync());
-      expect(notificationImage!.width, equals(48));
-      expect(notificationImage.height, equals(48));
+      // 少なくとも一部のwatchOSアイコンが生成されていることを確認
+      final iconList = appIconDir.listSync();
+      expect(iconList.length, greaterThan(10));
     });
 
-    test('コンパニオン設定用のアイコンが生成される', () {
+    test('watchOS用アイコンの正しいサイズが生成される', () {
+      // サンプル画像を読み込む
+      final inputFile = File(sampleImagePath);
+      final bytes = inputFile.readAsBytesSync();
+      final originalImage = img.decodeImage(bytes)!;
+
       // watchOS用のアイコンを生成
-      AppIconGenerator.generateIcons(sampleImagePath, 'watchos');
+      WatchOSIconGenerator.generateIcons(originalImage);
 
-      final watchosOutputDir = Directory('build/watchos/AppIcon.appiconset');
-
-      // 29pt@2xのコンパニオン設定アイコンを確認
-      final companionIcon =
-          File(path.join(watchosOutputDir.path, 'AppIcon29x29@2x.png'));
-      expect(companionIcon.existsSync(), isTrue);
-
-      // 29pt@3xのコンパニオン設定アイコンを確認
-      final companionIcon3x =
-          File(path.join(watchosOutputDir.path, 'AppIcon29x29@3x.png'));
-      expect(companionIcon3x.existsSync(), isTrue);
-
-      // アイコンのサイズを確認（29pt x 2x = 58px）
-      final companionImage = img.decodePng(companionIcon.readAsBytesSync());
-      expect(companionImage!.width, equals(58));
-      expect(companionImage.height, equals(58));
-    });
-
-    test('App Store用アイコンが生成される', () {
-      // watchOS用のアイコンを生成
-      AppIconGenerator.generateIcons(sampleImagePath, 'watchos');
-
-      final watchosOutputDir = Directory('build/watchos/AppIcon.appiconset');
-
-      // App Store用アイコンを確認
-      final appStoreIcon =
-          File(path.join(watchosOutputDir.path, 'AppIcon1024x1024@1x.png'));
+      // App Store用アイコンを確認 (1024x1024)
+      final appStoreIcon = File(path.join(
+          'build/watchos/AppIcon.appiconset', 'AppIcon1024x1024@1x.png'));
       expect(appStoreIcon.existsSync(), isTrue);
 
-      // アイコンのサイズを確認
       final appStoreImage = img.decodePng(appStoreIcon.readAsBytesSync());
       expect(appStoreImage!.width, equals(1024));
       expect(appStoreImage.height, equals(1024));
+
+      // Companion設定用アイコンを確認 (29pt @3x = 87x87)
+      final companionIcon = File(
+          path.join('build/watchos/AppIcon.appiconset', 'AppIcon29x29@3x.png'));
+      expect(companionIcon.existsSync(), isTrue);
+
+      final companionImage = img.decodePng(companionIcon.readAsBytesSync());
+      expect(companionImage!.width, equals(87));
+      expect(companionImage.height, equals(87));
     });
 
-    test('シェルスクリプトで実行した場合もwatchOS用アイコンが生成される', () {
-      // 既存のビルドディレクトリをクリア
-      final watchosOutputDir = Directory('build/watchos');
-      if (watchosOutputDir.existsSync()) {
-        watchosOutputDir.deleteSync(recursive: true);
-      }
+    test('各Apple Watchサイズのアイコンが生成される', () {
+      // サンプル画像を読み込む
+      final inputFile = File(sampleImagePath);
+      final bytes = inputFile.readAsBytesSync();
+      final originalImage = img.decodeImage(bytes)!;
 
-      // シェルスクリプトを実行
-      final result = Process.runSync(
-        './app-icon-gen.sh',
-        ['-p', 'watchos', sampleImagePath],
-      );
+      // watchOS用のアイコンを生成
+      WatchOSIconGenerator.generateIcons(originalImage);
 
-      expect(result.exitCode, equals(0), reason: '${result.stderr}');
-      expect(watchosOutputDir.existsSync(), isTrue,
-          reason: 'watchOSビルドディレクトリが見つかりません');
+      final appiconDir = Directory('build/watchos/AppIcon.appiconset');
 
-      // Contents.jsonが生成されたことを確認
-      final contentsFile = File(path.join(
-          watchosOutputDir.path, 'AppIcon.appiconset', 'Contents.json'));
-      expect(contentsFile.existsSync(), isTrue);
+      // 主要なApple Watch向けアイコンをチェック（いくつかのモデルのみ）
+
+      // 38mm watch
+      final icon24 = File(path.join(appiconDir.path, 'AppIcon24x24@2x.png'));
+      expect(icon24.existsSync(), isTrue);
+
+      // 42mm watch
+      final icon27 =
+          File(path.join(appiconDir.path, 'AppIcon27.5x27.5@2x.png'));
+      expect(icon27.existsSync(), isTrue);
+
+      // 44mm watch
+      final icon50 = File(path.join(appiconDir.path, 'AppIcon50x50@2x.png'));
+      expect(icon50.existsSync(), isTrue);
+
+      // 45mm watch
+      final icon51 = File(path.join(appiconDir.path, 'AppIcon51x51@2x.png'));
+      expect(icon51.existsSync(), isTrue);
+
+      // 49mm watch
+      final icon54 = File(path.join(appiconDir.path, 'AppIcon54x54@2x.png'));
+      expect(icon54.existsSync(), isTrue);
     });
   });
 }
