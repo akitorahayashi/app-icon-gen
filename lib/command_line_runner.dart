@@ -4,7 +4,6 @@ import 'package:path/path.dart' as path;
 
 import 'app_icon_generator.dart';
 
-/// CLIツールのエントリーポイント
 void run(List<String> arguments) {
   final parser = ArgParser()
     ..addOption(

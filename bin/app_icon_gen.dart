@@ -1,6 +1,6 @@
-import 'package:app_icon_gen/cli.dart' as cli;
+import 'package:app_icon_gen/command_line_runner.dart' as command_line_runner;
 
 // メインエントリーポイント
 void main(List<String> arguments) {
-  cli.run(arguments);
+  command_line_runner.run(arguments);
 }

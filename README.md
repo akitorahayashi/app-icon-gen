@@ -53,7 +53,7 @@ app-icon-gen.sh             # 実行用のシェルスクリプト
 
 lib/
 ├── app_icon_generator.dart  
-├── cli.dart                 
+├── command_line_runner.dart                 
 ├── model/                   
 │   ├── ios_icon_template.dart    # iOS用テンプレート
 │   └── watchos_icon_template.dart # watchOS用テンプレート
