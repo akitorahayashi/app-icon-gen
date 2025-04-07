@@ -3,9 +3,9 @@ import 'package:args/args.dart';
 import 'package:path/path.dart' as path;
 import 'package:image/image.dart' as img;
 
-import 'platform/android_icon_generator.dart';
-import 'platform/ios_icon_generator.dart';
-import 'platform/watchos_icon_generator.dart';
+import 'generator/android_icon_generator.dart';
+import 'generator/ios_icon_generator.dart';
+import 'generator/watchos_icon_generator.dart';
 
 void run(List<String> arguments) {
   final parser = ArgParser()

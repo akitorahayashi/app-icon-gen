@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
-import 'package:app_icon_gen/platform/ios_icon_generator.dart';
+import 'package:app_icon_gen/generator/ios_icon_generator.dart';
 
 void main() {
   group('iOS Icon Generator Tests', () {
