@@ -3,11 +3,11 @@
 ## Features
 
 ### iOS
-- 最新のiOS 17/Xcode 15形式に対応
-  - Universal アイコン (1024x1024)
-  - ダークモード対応アイコン (1024x1024)
-  - Tinted モード対応アイコン (1024x1024)
-- 従来の形式 (iOS 16以下の互換性)
+- Support for the latest format
+  - Universal icon (1024x1024)
+  - Dark mode icon (1024x1024)
+  - Tinted mode icon (1024x1024)
+- Legacy format (iOS 16 and below compatibility)
   - iPhone Icons
     - Notification icons (20pt @1x, @2x, @3x)
     - Settings icons (29pt @1x, @2x, @3x)
@@ -22,6 +22,18 @@
   - App Store icon (1024x1024)
 - Automatic Contents.json generation
 
+### watchOS
+- App icons for all Apple Watch models
+  - 38mm watch (24pt, 86pt)
+  - 40mm watch (44pt)
+  - 42mm watch (27.5pt, 98pt)
+  - 44mm watch (50pt, 108pt)
+  - 45mm watch (51pt, 117pt)
+  - 49mm watch (54pt, 129pt)
+- Companion settings icons (29pt @2x, @3x)
+- App Store icon (1024x1024)
+- Automatic Contents.json generation
+
 ### Android
 - Traditional icons (all densities)
   - mdpi (48x48)
@@ -34,18 +46,6 @@
   - Background layer (ic_launcher_background.png)
   - Required XML resources
 - Play Store icon (512x512)
-
-### watchOS
-- App icons for all Apple Watch models
-  - 38mm watch (24pt, 86pt)
-  - 40mm watch (44pt)
-  - 42mm watch (27.5pt, 98pt)
-  - 44mm watch (50pt, 108pt)
-  - 45mm watch (51pt, 117pt)
-  - 49mm watch (54pt, 129pt)
-- Companion settings icons (29pt @2x, @3x)
-- App Store icon (1024x1024)
-- Automatic Contents.json generation
 
 ## Directory Structure
 ```
@@ -145,26 +145,6 @@ build/ios/AppIcon.appiconset/
 └── AppIcon-1024x1024-tinted.png 
 ```
 
-### Android
-
-```
-build/android/
-├── mipmap-mdpi/
-│   ├── ic_launcher.png
-│   ├── ic_launcher_background.png
-│   └── ic_launcher_foreground.png
-├── mipmap-hdpi/
-│   └── ... (同様のファイル)
-├── ... (その他の解像度)
-├── mipmap-anydpi-v26/
-│   ├── ic_launcher.xml
-│   └── ic_launcher_round.xml
-├── values/
-│   └── colors.xml
-└── playstore/
-    └── play_store_icon.png
-```
-
 ### watchOS
 
 ```
@@ -185,5 +165,25 @@ build/watchos/AppIcon.appiconset/
 ├── AppIcon117x117@2x.png
 ├── AppIcon129x129@2x.png
 └── AppIcon1024x1024@1x.png
+```
+
+### Android
+
+```
+build/android/
+├── mipmap-mdpi/
+│   ├── ic_launcher.png
+│   ├── ic_launcher_background.png
+│   └── ic_launcher_foreground.png
+├── mipmap-hdpi/
+│   └── ... (同様のファイル)
+├── ... (その他の解像度)
+├── mipmap-anydpi-v26/
+│   ├── ic_launcher.xml
+│   └── ic_launcher_round.xml
+├── values/
+│   └── colors.xml
+└── playstore/
+    └── play_store_icon.png
 ```
 
