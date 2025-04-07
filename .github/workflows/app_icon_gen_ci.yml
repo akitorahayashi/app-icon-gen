@@ -1,0 +1,99 @@
+name: App Icon Gen CI
+
+on:
+  push:
+    branches: [ "master", "main" ] 
+  pull_request:
+    branches: [ "master", "main" ]
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3  # リポジトリをチェックアウト
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1  # Dart SDKをセットアップ
+        with:
+          sdk: 'stable'
+          
+      - name: Install dependencies  # 依存関係をインストール
+        run: dart pub get
+        
+      - name: Set shell script permissions  # シェルスクリプトに実行権限を付与
+        run: chmod +x app-icon-gen.sh
+        
+      - name: Verify formatting  # コードフォーマットをチェック
+        run: dart format --output=none --set-exit-if-changed .
+        
+      - name: Analyze project source  # 静的解析を実行
+        run: dart analyze
+        
+      - name: Run platform tests  # プラットフォーム別テストを実行
+        run: dart test
+        
+  integration:
+    name: Integration Tests
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 'stable'
+          
+      - name: Install dependencies
+        run: dart pub get
+        
+      - name: Set shell script permissions
+        run: chmod +x app-icon-gen.sh
+        
+      - name: Test iOS icon generation
+        run: |
+          ./app-icon-gen.sh -p ios assets/icon_gen_sample.png
+          if [ ! -d "build/ios" ]; then
+            echo "iOS用アイコンの生成に失敗しました"
+            exit 1
+          fi
+          # Contents.jsonが存在することを確認
+          if [ ! -f "build/ios/AppIcon.appiconset/Contents.json" ]; then
+            echo "iOS用Contents.jsonの生成に失敗しました"
+            exit 1
+          fi
+          
+      - name: Test Android icon generation
+        run: |
+          ./app-icon-gen.sh -p android assets/icon_gen_sample.png
+          if [ ! -d "build/android" ]; then
+            echo "Android用アイコンの生成に失敗しました"
+            exit 1
+          fi
+          # mdpi密度フォルダが存在することを確認
+          if [ ! -d "build/android/mipmap-mdpi" ]; then
+            echo "Android用密度フォルダの生成に失敗しました"
+            exit 1
+          fi
+          
+      - name: Test watchOS icon generation
+        run: |
+          ./app-icon-gen.sh -p watchos assets/icon_gen_sample.png
+          if [ ! -d "build/watchos" ]; then
+            echo "watchOS用アイコンの生成に失敗しました"
+            exit 1
+          fi
+          # Contents.jsonが存在することを確認
+          if [ ! -f "build/watchos/AppIcon.appiconset/Contents.json" ]; then
+            echo "watchOS用Contents.jsonの生成に失敗しました"
+            exit 1
+          fi

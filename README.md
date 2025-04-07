@@ -22,6 +22,15 @@
   - App Store icon (1024x1024)
 - Automatic Contents.json generation
 
+#### iOS 17のダークモードとTintedモード対応
+
+デフォルトでは、すべてのモード（ライト/ダーク/Tinted）に同じアイコン画像が使用されますが、最適な表示のためには、各モード専用のアイコンを用意することをお勧めします：
+
+- **ダークモード用アイコン**: 暗い背景に映えるようにデザインされたアイコン（自動生成されたものを `AppIcon-1024x1024-dark.png` と交換）
+- **Tintedモード用アイコン**: システムのアクセントカラーが効果的に適用できるモノクロや単色ベースのデザイン（自動生成されたものを `AppIcon-1024x1024-tinted.png` と交換）
+
+各モード用のアイコンを用意したら、生成後に `build/ios/AppIcon.appiconset/` ディレクトリ内の対応するファイルを置き換えてください。
+
 ### Android
 - Traditional icons (all densities)
   - mdpi (48x48)
@@ -35,6 +44,18 @@
   - Required XML resources
 - Play Store icon (512x512)
 
+### watchOS
+- App icons for all Apple Watch models
+  - 38mm watch (24pt, 86pt)
+  - 40mm watch (44pt)
+  - 42mm watch (27.5pt, 98pt)
+  - 44mm watch (50pt, 108pt)
+  - 45mm watch (51pt, 117pt)
+  - 49mm watch (54pt, 129pt)
+- Companion settings icons (29pt @2x, @3x)
+- App Store icon (1024x1024)
+- Automatic Contents.json generation
+
 ## Directory Structure
 ```
 app-icon-gen.sh             # 実行用のシェルスクリプト
@@ -43,10 +64,14 @@ lib/
 ├── app_icon_generator.dart  
 ├── cli.dart                 
 ├── model/                   
-│   └── icon_template.dart   
+│   ├── icon_template.dart        # 基底テンプレートクラス
+│   ├── ios_icon_template.dart    # iOS用テンプレート
+│   ├── android_icon_template.dart # Android用テンプレート
+│   └── watchos_icon_template.dart # watchOS用テンプレート
 └── platform/               
     ├── android_icon_generator.dart  
-    └── ios_icon_generator.dart      
+    ├── ios_icon_generator.dart      
+    └── watchos_icon_generator.dart  
 
 bin/
 └── app_icon_gen.dart       
@@ -70,7 +95,7 @@ assets/
 $ git clone https://github.com/akitorahayashi/app_icon_gen.git
 $ cd app_icon_gen
 $ dart pub get
-$ chmod +x app-icon-gen.sh  # シェルスクリプトに実行権限を付与
+$ chmod +x app-icon-gen.sh  # 実行権限を付与
 ```
 
 ## Preparing Your Icon
@@ -80,32 +105,34 @@ $ chmod +x app-icon-gen.sh  # シェルスクリプトに実行権限を付与
 
 ## Usage
 
+プラットフォームの指定が必須です
+
 ```bash
-$ ./app-icon-gen.sh assets/your_icon.png
+$ ./app-icon-gen.sh -p <platform> assets/your_icon.png
 ```
 
 ### Examples
 
-**iOSアイコンのみ生成**
+**iOSアイコンを生成**
 ```bash
 $ ./app-icon-gen.sh -p ios assets/your_icon.png
 ```
 
-**Androidアイコンのみ生成**
+**Androidアイコンを生成**
 ```bash
 $ ./app-icon-gen.sh -p android assets/your_icon.png
 ```
 
-**両プラットフォーム用アイコンを生成：**
+**watchOSアイコンを生成**
 ```bash
-$ ./app-icon-gen.sh assets/your_icon.png
+$ ./app-icon-gen.sh -p watchos assets/your_icon.png
 ```
 
 生成されたすべてのアイコンは、プロジェクトの `build/` ディレクトリに保存されます。
 
 #### iOS 17のダークモードとTintedモード対応
 
-デフォルトでは、すべてのモード（ライト/ダーク/Tinted）に同じアイコン画像が使用されますが、最適な表示のためには、各モード専用のアイコンを用意することをお勧めします
+デフォルトでは、すべてのモード（ライト/ダーク/Tinted）に同じアイコン画像が使用されますが、最適な表示のためには、各モード専用のアイコンを用意することをお勧めします：
 
 - **ダークモード用アイコン**: 暗い背景に映えるようにデザインされたアイコン（自動生成されたものを `AppIcon-1024x1024-dark.png` と交換）
 - **Tintedモード用アイコン**: システムのアクセントカラーが効果的に適用できるモノクロや単色ベースのデザイン（自動生成されたものを `AppIcon-1024x1024-tinted.png` と交換）
@@ -145,5 +172,27 @@ build/android/
 │   └── colors.xml
 └── playstore/
     └── play_store_icon.png
+```
+
+### watchOS
+
+```
+build/watchos/AppIcon.appiconset/
+├── Contents.json
+├── AppIcon24x24@2x.png
+├── AppIcon27.5x27.5@2x.png
+├── AppIcon29x29@2x.png
+├── AppIcon29x29@3x.png
+├── AppIcon40x40@2x.png
+├── AppIcon44x44@2x.png
+├── AppIcon50x50@2x.png
+├── AppIcon51x51@2x.png
+├── AppIcon54x54@2x.png
+├── AppIcon86x86@2x.png
+├── AppIcon98x98@2x.png
+├── AppIcon108x108@2x.png
+├── AppIcon117x117@2x.png
+├── AppIcon129x129@2x.png
+└── AppIcon1024x1024@1x.png
 ```
 

@@ -3,14 +3,16 @@ import 'dart:io';
 import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as path;
 import '../model/icon_template.dart';
+import '../model/ios_icon_template.dart';
 
 /// iOS向けアイコン生成クラス
 class IOSIconGenerator {
   /// iPhoneとiPad用のアイコンテンプレートリスト
-  static final List<IconTemplate> iosIconTemplates = _createIosIconTemplates();
+  static final List<IOSIconTemplate> iosIconTemplates =
+      _createIosIconTemplates();
 
   /// 最新のiOS用アイコンテンプレート（universal）
-  static final List<IconTemplate> modernIosIconTemplates =
+  static final List<IOSIconTemplate> modernIosIconTemplates =
       _createModernIosIconTemplates();
 
   /// iOS用のアイコンを生成
@@ -96,85 +98,85 @@ class IOSIconGenerator {
   }
 
   /// iOS用の従来のアイコンテンプレートを作成
-  static List<IconTemplate> _createIosIconTemplates() {
+  static List<IOSIconTemplate> _createIosIconTemplates() {
     return [
       // iPhone用アイコン
-      IconTemplate(
+      IOSIconTemplate(
           size: 20,
           scale: 1,
           idiom: 'iphone',
           filename: 'Icon-App-20x20@1x.png'),
-      IconTemplate(
+      IOSIconTemplate(
           size: 20,
           scale: 2,
           idiom: 'iphone',
           filename: 'Icon-App-20x20@2x.png'),
-      IconTemplate(
+      IOSIconTemplate(
           size: 20,
           scale: 3,
           idiom: 'iphone',
           filename: 'Icon-App-20x20@3x.png'),
-      IconTemplate(
+      IOSIconTemplate(
           size: 29,
           scale: 1,
           idiom: 'iphone',
           filename: 'Icon-App-29x29@1x.png'),
-      IconTemplate(
+      IOSIconTemplate(
           size: 29,
           scale: 2,
           idiom: 'iphone',
           filename: 'Icon-App-29x29@2x.png'),
-      IconTemplate(
+      IOSIconTemplate(
           size: 29,
           scale: 3,
           idiom: 'iphone',
           filename: 'Icon-App-29x29@3x.png'),
-      IconTemplate(
+      IOSIconTemplate(
           size: 40,
           scale: 2,
           idiom: 'iphone',
           filename: 'Icon-App-40x40@2x.png'),
-      IconTemplate(
+      IOSIconTemplate(
           size: 40,
           scale: 3,
           idiom: 'iphone',
           filename: 'Icon-App-40x40@3x.png'),
-      IconTemplate(
+      IOSIconTemplate(
           size: 60,
           scale: 2,
           idiom: 'iphone',
           filename: 'Icon-App-60x60@2x.png'),
-      IconTemplate(
+      IOSIconTemplate(
           size: 60,
           scale: 3,
           idiom: 'iphone',
           filename: 'Icon-App-60x60@3x.png'),
 
       // iPad用アイコン
-      IconTemplate(
+      IOSIconTemplate(
           size: 20, scale: 1, idiom: 'ipad', filename: 'Icon-App-20x20@1x.png'),
-      IconTemplate(
+      IOSIconTemplate(
           size: 20, scale: 2, idiom: 'ipad', filename: 'Icon-App-20x20@2x.png'),
-      IconTemplate(
+      IOSIconTemplate(
           size: 29, scale: 1, idiom: 'ipad', filename: 'Icon-App-29x29@1x.png'),
-      IconTemplate(
+      IOSIconTemplate(
           size: 29, scale: 2, idiom: 'ipad', filename: 'Icon-App-29x29@2x.png'),
-      IconTemplate(
+      IOSIconTemplate(
           size: 40, scale: 1, idiom: 'ipad', filename: 'Icon-App-40x40@1x.png'),
-      IconTemplate(
+      IOSIconTemplate(
           size: 40, scale: 2, idiom: 'ipad', filename: 'Icon-App-40x40@2x.png'),
-      IconTemplate(
+      IOSIconTemplate(
           size: 76, scale: 1, idiom: 'ipad', filename: 'Icon-App-76x76@1x.png'),
-      IconTemplate(
+      IOSIconTemplate(
           size: 76, scale: 2, idiom: 'ipad', filename: 'Icon-App-76x76@2x.png'),
-      IconTemplate(
+      IOSIconTemplate(
           size: 83.5,
           scale: 2,
           idiom: 'ipad',
           filename: 'Icon-App-83.5x83.5@2x.png'),
 
       // App Store用
-      IconTemplate(
+      IOSIconTemplate(
           size: 1024,
           scale: 1,
           idiom: 'ios-marketing',
@@ -183,10 +185,10 @@ class IOSIconGenerator {
   }
 
   /// 最新のiOS用アイコンテンプレートを作成
-  static List<IconTemplate> _createModernIosIconTemplates() {
+  static List<IOSIconTemplate> _createModernIosIconTemplates() {
     return [
       // 標準アイコン
-      IconTemplate(
+      IOSIconTemplate(
         size: 1024,
         scale: 0, // スケール不要
         idiom: 'universal',
@@ -195,7 +197,7 @@ class IOSIconGenerator {
       ),
 
       // ダークモードアイコン
-      IconTemplate(
+      IOSIconTemplate(
         size: 1024,
         scale: 0, // スケール不要
         idiom: 'universal',
@@ -208,7 +210,7 @@ class IOSIconGenerator {
       ),
 
       // ティント付きアイコン
-      IconTemplate(
+      IOSIconTemplate(
         size: 1024,
         scale: 0, // スケール不要
         idiom: 'universal',
