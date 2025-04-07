@@ -116,7 +116,7 @@ $ ./app-icon-gen.sh -p android assets/your_icon.png
 
 生成されたすべてのアイコンは、プロジェクトの `app_icon_gen/build/` ディレクトリに保存されます。
 
-#### iOS 17のダークモードとTintedモード対応
+#### iOS 17のダークモードとTintedモードの対応
 
 デフォルトでは、すべてのモード（ライト/ダーク/Tinted）に同じアイコン画像が使用されますが、最適な表示のためには、各モード専用のアイコンを用意することをお勧めします：
 
@@ -124,6 +124,8 @@ $ ./app-icon-gen.sh -p android assets/your_icon.png
 - **Tintedモード用アイコン**: システムのアクセントカラーが効果的に適用できるモノクロや単色ベースのデザイン（自動生成されたものを `AppIcon-1024x1024-tinted.png` と交換）
 
 各モード用のアイコンを用意したら、生成後に `build/ios/AppIcon.appiconset/` ディレクトリ内の対応するファイルを置き換えてください。
+
+## Outputs
 
 ### iOS
 
@@ -133,11 +135,21 @@ build/ios/AppIcon.appiconset/
 ├── Icon-App-20x20@1x.png
 ├── Icon-App-20x20@2x.png
 ├── Icon-App-20x20@3x.png
-├── ... (その他のサイズ)
+├── Icon-App-29x29@1x.png
+├── Icon-App-29x29@2x.png
+├── Icon-App-29x29@3x.png
+├── Icon-App-40x40@1x.png
+├── Icon-App-40x40@2x.png
+├── Icon-App-40x40@3x.png
+├── Icon-App-60x60@2x.png
+├── Icon-App-60x60@3x.png
+├── Icon-App-76x76@1x.png
+├── Icon-App-76x76@2x.png
+├── Icon-App-83.5x83.5@2x.png
 ├── Icon-App-1024x1024@1x.png
-├── AppIcon-1024x1024.png      
-├── AppIcon-1024x1024-dark.png 
-└── AppIcon-1024x1024-tinted.png 
+├── AppIcon-1024x1024.png
+├── AppIcon-1024x1024-dark.png
+└── AppIcon-1024x1024-tinted.png
 ```
 
 ### watchOS
@@ -168,11 +180,29 @@ build/watchos/AppIcon.appiconset/
 build/android/
 ├── mipmap-mdpi/
 │   ├── ic_launcher.png
+│   ├── ic_launcher_round.png
 │   ├── ic_launcher_background.png
 │   └── ic_launcher_foreground.png
 ├── mipmap-hdpi/
-│   └── ... (同様のファイル)
-├── ... (その他の解像度)
+│   ├── ic_launcher.png
+│   ├── ic_launcher_round.png
+│   ├── ic_launcher_background.png
+│   └── ic_launcher_foreground.png
+├── mipmap-xhdpi/
+│   ├── ic_launcher.png
+│   ├── ic_launcher_round.png
+│   ├── ic_launcher_background.png
+│   └── ic_launcher_foreground.png
+├── mipmap-xxhdpi/
+│   ├── ic_launcher.png
+│   ├── ic_launcher_round.png
+│   ├── ic_launcher_background.png
+│   └── ic_launcher_foreground.png
+├── mipmap-xxxhdpi/
+│   ├── ic_launcher.png
+│   ├── ic_launcher_round.png
+│   ├── ic_launcher_background.png
+│   └── ic_launcher_foreground.png
 ├── mipmap-anydpi-v26/
 │   ├── ic_launcher.xml
 │   └── ic_launcher_round.xml
