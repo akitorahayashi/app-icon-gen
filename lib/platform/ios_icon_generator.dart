@@ -9,6 +9,10 @@ class IOSIconGenerator {
   /// iPhoneとiPad用のアイコンテンプレートリスト
   static final List<IconTemplate> iosIconTemplates = _createIosIconTemplates();
 
+  /// 最新のiOS用アイコンテンプレート（universal）
+  static final List<IconTemplate> modernIosIconTemplates =
+      _createModernIosIconTemplates();
+
   /// iOS用のアイコンを生成
   static void generateIcons(img.Image originalImage) {
     print('iOS用アイコンを生成中...');
@@ -20,6 +24,7 @@ class IOSIconGenerator {
     // 各サイズを生成
     final List<Map<String, dynamic>> images = [];
 
+    // 旧式のアイコンも生成（互換性のため）
     for (var template in iosIconTemplates) {
       final width = (template.size * template.scale).toInt();
       final height = (template.size * template.scale).toInt();
@@ -42,6 +47,40 @@ class IOSIconGenerator {
       print('iOS用アイコン作成: $filename (${width}x$height)');
     }
 
+    // 最新の形式のアイコンを生成
+    for (var template in modernIosIconTemplates) {
+      final width = (template.size).toInt();
+      final height = (template.size).toInt();
+
+      // 画像をリサイズ
+      final resized =
+          img.copyResize(originalImage, width: width, height: height);
+
+      // ファイル名（appearance付きの場合はファイル名を変更）
+      String filename = '';
+      if (template.appearance != null) {
+        final appearanceValue = template.appearance!['value'] ?? 'unknown';
+        filename = 'AppIcon-${width}x${height}-${appearanceValue}.png';
+      } else {
+        filename = 'AppIcon-${width}x${height}.png';
+      }
+
+      final filePath = path.join(outputDir.path, filename);
+
+      // PNGとして書き出し
+      final pngBytes = img.encodePng(resized);
+      File(filePath).writeAsBytesSync(pngBytes);
+
+      // Contents.json用のマップを作成
+      final Map<String, dynamic> imageMap = template.toContentsJsonMap();
+      if (filename.isNotEmpty) {
+        imageMap['filename'] = filename;
+      }
+      images.add(imageMap);
+
+      print('iOS用最新形式アイコン作成: $filename (${width}x$height)');
+    }
+
     // Contents.jsonを生成
     final contents = {
       'images': images,
@@ -56,7 +95,7 @@ class IOSIconGenerator {
     print('iOS用アイコンの生成が完了しました。');
   }
 
-  /// iOS用のアイコンテンプレートを作成
+  /// iOS用の従来のアイコンテンプレートを作成
   static List<IconTemplate> _createIosIconTemplates() {
     return [
       // iPhone用アイコン
@@ -140,6 +179,46 @@ class IOSIconGenerator {
           scale: 1,
           idiom: 'ios-marketing',
           filename: 'Icon-App-1024x1024@1x.png'),
+    ];
+  }
+
+  /// 最新のiOS用アイコンテンプレートを作成
+  static List<IconTemplate> _createModernIosIconTemplates() {
+    return [
+      // 標準アイコン
+      IconTemplate(
+        size: 1024,
+        scale: 0, // スケール不要
+        idiom: 'universal',
+        filename: '',
+        platform: 'ios',
+      ),
+
+      // ダークモードアイコン
+      IconTemplate(
+        size: 1024,
+        scale: 0, // スケール不要
+        idiom: 'universal',
+        filename: '',
+        platform: 'ios',
+        appearance: {
+          'type': 'luminosity',
+          'value': 'dark',
+        },
+      ),
+
+      // ティント付きアイコン
+      IconTemplate(
+        size: 1024,
+        scale: 0, // スケール不要
+        idiom: 'universal',
+        filename: '',
+        platform: 'ios',
+        appearance: {
+          'type': 'luminosity',
+          'value': 'tinted',
+        },
+      ),
     ];
   }
 }
