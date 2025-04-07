@@ -7,7 +7,7 @@
   - Universal アイコン (1024x1024)
   - ダークモード対応アイコン (1024x1024)
   - Tinted モード対応アイコン (1024x1024)
-- 従来形式 (iOS 16以下の互換性)
+- 従来の形式 (iOS 16以下の互換性)
   - iPhone Icons
     - Notification icons (20pt @1x, @2x, @3x)
     - Settings icons (29pt @1x, @2x, @3x)
@@ -21,15 +21,6 @@
     - iPad Pro icons (83.5pt @2x)
   - App Store icon (1024x1024)
 - Automatic Contents.json generation
-
-#### iOS 17のダークモードとTintedモード対応
-
-デフォルトでは、すべてのモード（ライト/ダーク/Tinted）に同じアイコン画像が使用されますが、最適な表示のためには、各モード専用のアイコンを用意することをお勧めします：
-
-- **ダークモード用アイコン**: 暗い背景に映えるようにデザインされたアイコン（自動生成されたものを `AppIcon-1024x1024-dark.png` と交換）
-- **Tintedモード用アイコン**: システムのアクセントカラーが効果的に適用できるモノクロや単色ベースのデザイン（自動生成されたものを `AppIcon-1024x1024-tinted.png` と交換）
-
-各モード用のアイコンを用意したら、生成後に `build/ios/AppIcon.appiconset/` ディレクトリ内の対応するファイルを置き換えてください。
 
 ### Android
 - Traditional icons (all densities)
@@ -64,9 +55,7 @@ lib/
 ├── app_icon_generator.dart  
 ├── cli.dart                 
 ├── model/                   
-│   ├── icon_template.dart        # 基底テンプレートクラス
 │   ├── ios_icon_template.dart    # iOS用テンプレート
-│   ├── android_icon_template.dart # Android用テンプレート
 │   └── watchos_icon_template.dart # watchOS用テンプレート
 └── platform/               
     ├── android_icon_generator.dart  
@@ -77,7 +66,9 @@ bin/
 └── app_icon_gen.dart       
 
 test/
-└── icon_generator_test.dart 
+├── android_icon_generator_test.dart
+├── ios_icon_generator_test.dart
+└── watchos_icon_generator_test.dart
 
 assets/
 └── icon_gen_sample.png     
@@ -118,14 +109,14 @@ $ ./app-icon-gen.sh -p <platform> assets/your_icon.png
 $ ./app-icon-gen.sh -p ios assets/your_icon.png
 ```
 
-**Androidアイコンを生成**
-```bash
-$ ./app-icon-gen.sh -p android assets/your_icon.png
-```
-
 **watchOSアイコンを生成**
 ```bash
 $ ./app-icon-gen.sh -p watchos assets/your_icon.png
+```
+
+**Androidアイコンを生成**
+```bash
+$ ./app-icon-gen.sh -p android assets/your_icon.png
 ```
 
 生成されたすべてのアイコンは、プロジェクトの `build/` ディレクトリに保存されます。
@@ -149,9 +140,9 @@ build/ios/AppIcon.appiconset/
 ├── Icon-App-20x20@3x.png
 ├── ... (その他のサイズ)
 ├── Icon-App-1024x1024@1x.png
-├── AppIcon-1024x1024.png      # iOS 17用標準アイコン
-├── AppIcon-1024x1024-dark.png # iOS 17用ダークモードアイコン
-└── AppIcon-1024x1024-tinted.png # iOS 17用ティントモードアイコン
+├── AppIcon-1024x1024.png      
+├── AppIcon-1024x1024-dark.png 
+└── AppIcon-1024x1024-tinted.png 
 ```
 
 ### Android

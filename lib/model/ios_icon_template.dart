@@ -1,7 +1,17 @@
-import 'icon_template.dart';
-
 /// iOS用アイコンテンプレート
-class IOSIconTemplate extends IconTemplate {
+class IOSIconTemplate {
+  /// サイズ（ポイント単位）
+  final num size;
+
+  /// 倍率（1x, 2x, 3x）
+  final int scale;
+
+  /// デバイス区分（iphone, ipad, ios-marketing, universal など）
+  final String idiom;
+
+  /// ファイル名
+  final String filename;
+
   /// プラットフォーム (ios など)
   final String? platform;
 
@@ -9,15 +19,14 @@ class IOSIconTemplate extends IconTemplate {
   final Map<String, String>? appearance;
 
   IOSIconTemplate({
-    required super.size,
-    required super.scale,
-    required super.idiom,
-    required super.filename,
+    required this.size,
+    required this.scale,
+    required this.idiom,
+    required this.filename,
     this.platform,
     this.appearance,
   });
 
-  @override
   Map<String, dynamic> toContentsJsonMap() {
     final map = <String, dynamic>{
       'size': '${size}x$size',

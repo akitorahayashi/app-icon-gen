@@ -1,7 +1,17 @@
-import 'icon_template.dart';
-
 /// watchOS用アイコンテンプレート
-class WatchOSIconTemplate extends IconTemplate {
+class WatchOSIconTemplate {
+  /// サイズ（ポイント単位）
+  final num size;
+
+  /// 倍率（1x, 2x, 3x）
+  final int scale;
+
+  /// デバイス区分（watch, watch-marketing など）
+  final String idiom;
+
+  /// ファイル名
+  final String filename;
+
   /// 役割 (appLauncher, companionSettings など)
   final String? role;
 
@@ -9,15 +19,14 @@ class WatchOSIconTemplate extends IconTemplate {
   final String? subtype;
 
   WatchOSIconTemplate({
-    required super.size,
-    required super.scale,
-    required super.idiom,
-    required super.filename,
+    required this.size,
+    required this.scale,
+    required this.idiom,
+    required this.filename,
     this.role,
     this.subtype,
   });
 
-  @override
   Map<String, dynamic> toContentsJsonMap() {
     final map = <String, dynamic>{
       'size': '${size}x$size',
