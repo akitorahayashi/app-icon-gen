@@ -119,7 +119,7 @@ $ ./app-icon-gen.sh -p watchos assets/your_icon.png
 $ ./app-icon-gen.sh -p android assets/your_icon.png
 ```
 
-生成されたすべてのアイコンは、プロジェクトの `build/` ディレクトリに保存されます。
+生成されたすべてのアイコンは、プロジェクトの `app_icon_gen/build/` ディレクトリに保存されます。
 
 #### iOS 17のダークモードとTintedモード対応
 
