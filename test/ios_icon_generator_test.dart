@@ -51,7 +51,7 @@ void main() {
 
       // App Store用アイコンを確認
       final appStoreIcon = iconFiles.firstWhere(
-          (file) => path.basename(file.path) == 'ItunesArtwork@2x.png',
+          (file) => path.basename(file.path) == 'Icon-App-1024x1024@1x.png',
           orElse: () => throw Exception('App Store用アイコンファイルが見つかりません'));
 
       // App Store用アイコンの寸法を確認（1024x1024）
