@@ -21,7 +21,7 @@ include: package:lints/recommended.yaml  # Dartの推奨リントルールを適
 
 analyzer:
   exclude:
-    - build/**  # 生成されたビルドファイルを解析から除外
+    - output/**  # 生成されたファイルを解析から除外
   errors:
     todo: info  # TODOコメントをエラーではなく情報として表示
     avoid_print: ignore  # CLIツールで使用するprint文の警告を無視

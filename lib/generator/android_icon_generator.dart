@@ -47,17 +47,17 @@ class AndroidIconGenerator {
   static void _ensureDirectoriesExist() {
     // 各密度のミップマップディレクトリ
     for (final density in _densitySizes.keys) {
-      Directory('build/android/mipmap-$density').createSync(recursive: true);
+      Directory('output/android/mipmap-$density').createSync(recursive: true);
     }
 
     // xml用のディレクトリ
-    Directory('build/android/mipmap-anydpi-v26').createSync(recursive: true);
+    Directory('output/android/mipmap-anydpi-v26').createSync(recursive: true);
 
     // valuesディレクトリ
-    Directory('build/android/values').createSync(recursive: true);
+    Directory('output/android/values').createSync(recursive: true);
 
     // プレイストアディレクトリ
-    Directory('build/android/playstore').createSync(recursive: true);
+    Directory('output/android/playstore').createSync(recursive: true);
   }
 
   /// 標準的なアイコンを生成（古いAndroid用）
@@ -67,7 +67,7 @@ class AndroidIconGenerator {
       final size = entry.value;
 
       final resized = img.copyResize(originalImage, width: size, height: size);
-      final outputPath = 'build/android/mipmap-$density/ic_launcher.png';
+      final outputPath = 'output/android/mipmap-$density/ic_launcher.png';
 
       // ファイルに保存
       File(outputPath).writeAsBytesSync(img.encodePng(resized));
@@ -75,7 +75,7 @@ class AndroidIconGenerator {
 
       // round版も作成
       final roundOutputPath =
-          'build/android/mipmap-$density/ic_launcher_round.png';
+          'output/android/mipmap-$density/ic_launcher_round.png';
       File(roundOutputPath).writeAsBytesSync(img.encodePng(resized));
       print(
           'Android Roundアイコン作成: mipmap-$density/ic_launcher_round.png (${size}x$size)');
@@ -89,7 +89,7 @@ class AndroidIconGenerator {
   static void _generateAdaptiveIconsForDensity(
       img.Image originalImage, String density) {
     final adaptiveSize = _adaptiveSizes[density]!;
-    final outputDir = 'build/android/mipmap-$density';
+    final outputDir = 'output/android/mipmap-$density';
 
     // 前景レイヤーを作成
     final foregroundImage = _createForegroundLayer(originalImage, adaptiveSize);
@@ -128,11 +128,11 @@ class AndroidIconGenerator {
 </resources>''';
 
     // XMLファイルを保存
-    File('build/android/mipmap-anydpi-v26/ic_launcher.xml')
+    File('output/android/mipmap-anydpi-v26/ic_launcher.xml')
         .writeAsStringSync(launcherXml);
-    File('build/android/mipmap-anydpi-v26/ic_launcher_round.xml')
+    File('output/android/mipmap-anydpi-v26/ic_launcher_round.xml')
         .writeAsStringSync(roundXml);
-    File('build/android/values/colors.xml').writeAsStringSync(colorsXml);
+    File('output/android/values/colors.xml').writeAsStringSync(colorsXml);
 
     print('AndroidアダプティブアイコンのXMLファイルを作成しました');
   }
@@ -153,7 +153,7 @@ class AndroidIconGenerator {
     final size = _playStoreIconSize;
     final resized = img.copyResize(originalImage, width: size, height: size);
 
-    final output = 'build/android/playstore/play_store_icon.png';
+    final output = 'output/android/playstore/play_store_icon.png';
     File(output).writeAsBytesSync(img.encodePng(resized));
     print('Play Storeアイコン作成: playstore/play_store_icon.png (${size}x$size)');
   }

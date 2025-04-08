@@ -55,41 +55,59 @@ jobs:
       - name: Set shell script permissions
         run: chmod +x app-icon-gen.sh
         
-      - name: Test iOS icon generation
+      - name: Verify iOS Icon Output
         run: |
+          # iOSアイコン生成の検証
           ./app-icon-gen.sh -p ios assets/icon_gen_sample.png
-          if [ ! -d "build/ios" ]; then
-            echo "iOS用アイコンの生成に失敗しました"
-            exit 1
-          fi
-          # Contents.jsonが存在することを確認
-          if [ ! -f "build/ios/AppIcon.appiconset/Contents.json" ]; then
-            echo "iOS用Contents.jsonの生成に失敗しました"
+          
+          # 出力ディレクトリチェック
+          if [ ! -d "output/ios" ]; then
+            echo "Error: iOS output directory was not created"
             exit 1
           fi
           
-      - name: Test Android icon generation
+          # Contents.jsonのチェック
+          if [ ! -f "output/ios/AppIcon.appiconset/Contents.json" ]; then
+            echo "Error: iOS Contents.json was not created"
+            exit 1
+          fi
+          
+          echo "iOS icon generation: SUCCESS ✅"
+
+      - name: Verify Android Icon Output
         run: |
+          # Androidアイコン生成の検証
           ./app-icon-gen.sh -p android assets/icon_gen_sample.png
-          if [ ! -d "build/android" ]; then
-            echo "Android用アイコンの生成に失敗しました"
-            exit 1
-          fi
-          # mdpi密度フォルダが存在することを確認
-          if [ ! -d "build/android/mipmap-mdpi" ]; then
-            echo "Android用密度フォルダの生成に失敗しました"
+          
+          # 出力ディレクトリチェック
+          if [ ! -d "output/android" ]; then
+            echo "Error: Android output directory was not created"
             exit 1
           fi
           
-      - name: Test watchOS icon generation
+          # mipmapディレクトリのチェック
+          if [ ! -d "output/android/mipmap-mdpi" ]; then
+            echo "Error: Android mipmap directories were not created"
+            exit 1
+          fi
+          
+          echo "Android icon generation: SUCCESS ✅"
+
+      - name: Verify watchOS Icon Output
         run: |
+          # watchOSアイコン生成の検証
           ./app-icon-gen.sh -p watchos assets/icon_gen_sample.png
-          if [ ! -d "build/watchos" ]; then
-            echo "watchOS用アイコンの生成に失敗しました"
+          
+          # 出力ディレクトリチェック
+          if [ ! -d "output/watchos" ]; then
+            echo "Error: watchOS output directory was not created"
             exit 1
           fi
-          # Contents.jsonが存在することを確認
-          if [ ! -f "build/watchos/AppIcon.appiconset/Contents.json" ]; then
-            echo "watchOS用Contents.jsonの生成に失敗しました"
+          
+          # Contents.jsonのチェック
+          if [ ! -f "output/watchos/AppIcon.appiconset/Contents.json" ]; then
+            echo "Error: watchOS Contents.json was not created"
             exit 1
           fi
+          
+          echo "watchOS icon generation: SUCCESS ✅"

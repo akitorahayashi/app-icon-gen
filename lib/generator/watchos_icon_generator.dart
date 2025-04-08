@@ -15,7 +15,7 @@ class WatchOSIconGenerator {
     print('watchOS用アイコンを生成中...');
 
     // 出力ディレクトリ
-    final outputDir = Directory('build/watchos/AppIcon.appiconset');
+    final outputDir = Directory('output/watchos/AppIcon.appiconset');
     outputDir.createSync(recursive: true);
 
     // 各サイズを生成

@@ -19,7 +19,7 @@ class IOSIconGenerator {
     print('iOS用アイコンを生成中...');
 
     // 出力ディレクトリ
-    final outputDir = Directory('build/ios/AppIcon.appiconset');
+    final outputDir = Directory('output/ios/AppIcon.appiconset');
     outputDir.createSync(recursive: true);
 
     // 各サイズを生成

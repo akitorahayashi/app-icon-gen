@@ -6,29 +6,32 @@ import 'package:test/test.dart';
 import 'package:app_icon_gen/generator/ios_icon_generator.dart';
 
 void main() {
-  group('iOS Icon Generator Tests', () {
-    // サンプル画像のパス
-    final String sampleImagePath = 'assets/icon_gen_sample.png';
+  group('IOSIconGenerator Tests', () {
+    final testImage = File('assets/icon_gen_sample.png');
+    final iosOutputDir = Directory('output/ios');
 
     tearDownAll(() {
       // 生成された出力ディレクトリを削除
-      final iosOutputDir = Directory('build/ios');
       if (iosOutputDir.existsSync()) {
         iosOutputDir.deleteSync(recursive: true);
       }
     });
 
-    test('iOS用アイコンが正しく生成される', () {
+    test('iOS用アイコンが正しく生成される', () async {
+      // テスト前にディレクトリをクリーンアップ
+      if (iosOutputDir.existsSync()) {
+        iosOutputDir.deleteSync(recursive: true);
+      }
+
       // サンプル画像を読み込む
-      final inputFile = File(sampleImagePath);
-      final bytes = inputFile.readAsBytesSync();
+      final bytes = testImage.readAsBytesSync();
       final originalImage = img.decodeImage(bytes)!;
 
       // iOS用のアイコンを生成
       IOSIconGenerator.generateIcons(originalImage);
 
-      // 出力ディレクトリを確認
-      final appIconDir = Directory('build/ios/AppIcon.appiconset');
+      // AppIcon.appiconsetディレクトリが作成されたことを確認
+      final appIconDir = Directory('output/ios/AppIcon.appiconset');
       expect(appIconDir.existsSync(), isTrue);
 
       // Contents.jsonが生成されていることを確認
@@ -40,10 +43,14 @@ void main() {
       expect(iconList.length, greaterThan(10));
     });
 
-    test('iOS用アイコンの正しいサイズが生成される', () {
+    test('iOS用アイコンの正しいサイズが生成される', () async {
+      // テスト前にディレクトリをクリーンアップ
+      if (iosOutputDir.existsSync()) {
+        iosOutputDir.deleteSync(recursive: true);
+      }
+
       // サンプル画像を読み込む
-      final inputFile = File(sampleImagePath);
-      final bytes = inputFile.readAsBytesSync();
+      final bytes = testImage.readAsBytesSync();
       final originalImage = img.decodeImage(bytes)!;
 
       // iOS用のアイコンを生成
@@ -51,7 +58,7 @@ void main() {
 
       // App Store用アイコンを確認 (1024x1024)
       final appStoreIcon = File(path.join(
-          'build/ios/AppIcon.appiconset', 'Icon-App-1024x1024@1x.png'));
+          'output/ios/AppIcon.appiconset', 'Icon-App-1024x1024@1x.png'));
       expect(appStoreIcon.existsSync(), isTrue);
 
       final appStoreImage = img.decodePng(appStoreIcon.readAsBytesSync());
@@ -60,7 +67,7 @@ void main() {
 
       // iPhone用アイコンを確認 (60pt @3x = 180x180)
       final iphoneIcon = File(
-          path.join('build/ios/AppIcon.appiconset', 'Icon-App-60x60@3x.png'));
+          path.join('output/ios/AppIcon.appiconset', 'Icon-App-60x60@3x.png'));
       expect(iphoneIcon.existsSync(), isTrue);
 
       final iphoneImage = img.decodePng(iphoneIcon.readAsBytesSync());
@@ -68,10 +75,14 @@ void main() {
       expect(iphoneImage.height, equals(180));
     });
 
-    test('iOS 17用の最新形式アイコンが生成される', () {
+    test('iOS 17用の最新形式アイコンが生成される', () async {
+      // テスト前にディレクトリをクリーンアップ
+      if (iosOutputDir.existsSync()) {
+        iosOutputDir.deleteSync(recursive: true);
+      }
+
       // サンプル画像を読み込む
-      final inputFile = File(sampleImagePath);
-      final bytes = inputFile.readAsBytesSync();
+      final bytes = testImage.readAsBytesSync();
       final originalImage = img.decodeImage(bytes)!;
 
       // iOS用のアイコンを生成
@@ -79,17 +90,17 @@ void main() {
 
       // Universalアイコンを確認
       final universalIcon = File(
-          path.join('build/ios/AppIcon.appiconset', 'AppIcon-1024x1024.png'));
+          path.join('output/ios/AppIcon.appiconset', 'AppIcon-1024x1024.png'));
       expect(universalIcon.existsSync(), isTrue);
 
       // ダークモードアイコンを確認
       final darkIcon = File(path.join(
-          'build/ios/AppIcon.appiconset', 'AppIcon-1024x1024-dark.png'));
+          'output/ios/AppIcon.appiconset', 'AppIcon-1024x1024-dark.png'));
       expect(darkIcon.existsSync(), isTrue);
 
       // Tintedモードアイコンを確認
       final tintedIcon = File(path.join(
-          'build/ios/AppIcon.appiconset', 'AppIcon-1024x1024-tinted.png'));
+          'output/ios/AppIcon.appiconset', 'AppIcon-1024x1024-tinted.png'));
       expect(tintedIcon.existsSync(), isTrue);
     });
   });

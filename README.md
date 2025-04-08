@@ -114,7 +114,7 @@ $ ./app-icon-gen.sh -p watchos assets/your_icon.png
 $ ./app-icon-gen.sh -p android assets/your_icon.png
 ```
 
-生成されたすべてのアイコンは、プロジェクトの `app_icon_gen/build/` ディレクトリに保存されます。
+生成されたすべてのアイコンは、プロジェクトの `app_icon_gen/output/` ディレクトリに保存されます。
 
 #### iOS 17のダークモードとTintedモードの対応
 
@@ -123,5 +123,5 @@ $ ./app-icon-gen.sh -p android assets/your_icon.png
 - **ダークモード用アイコン**: 暗い背景に映えるようにデザインされたアイコン（自動生成されたものを `AppIcon-1024x1024-dark.png` と交換）
 - **Tintedモード用アイコン**: システムのアクセントカラーが効果的に適用できるモノクロや単色ベースのデザイン（自動生成されたものを `AppIcon-1024x1024-tinted.png` と交換）
 
-各モード用のアイコンを用意したら、生成後に `build/ios/AppIcon.appiconset/` ディレクトリ内の対応するファイルを置き換えてください。
+各モード用のアイコンを用意したら、生成後に `output/ios/AppIcon.appiconset/` ディレクトリ内の対応するファイルを置き換えてください。
 
