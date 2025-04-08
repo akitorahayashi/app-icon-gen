@@ -1,17 +1,16 @@
-# Dart関連の一般的な除外項目
+# Dart関連
 .dart_tool/
 .packages
 pubspec.lock
-
-# 生成されたアプリアイコン
-build/
-
-# Dartコンパイル出力
 *.exe
 *.dll
 *.so
 *.dylib
 app_icon_gen
+
+# ビルド生成物（ディレクトリ構造のみ保持）
+build/*
+!build/.gitkeep
 
 # OS生成ファイル
 .DS_Store
@@ -20,3 +19,34 @@ Thumbs.db
 # エディタ設定
 .idea/
 .vscode/
+*.iml
+*.ipr
+*.iws
+
+# その他の一時ファイル
+*.class
+*.log
+*.pyc
+*.swp
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# Flutter/Dart/Pub関連
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+
+# デバッグ関連
+app.*.symbols
+app.*.map.json
+
+# Android Studioのビルド成果物
+/android/app/debug
+/android/app/profile
+/android/app/release
