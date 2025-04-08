@@ -8,7 +8,7 @@ pubspec.lock
 *.dylib
 app_icon_gen
 
-# ビルド生成物（ディレクトリ構造のみ保持）
+# ビルド生成物（ディレクトリの構造は無視しない）
 build/*
 !build/.gitkeep
 
@@ -46,7 +46,7 @@ migrate_working_dir/
 app.*.symbols
 app.*.map.json
 
-# Android Studioのビルド成果物
+# Android Studioのビルドの成果物
 /android/app/debug
 /android/app/profile
 /android/app/release
