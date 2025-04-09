@@ -12,6 +12,10 @@ app_icon_gen
 output/*
 !output/.gitkeep
 
+# ビルド関連
+build/
+**/build/
+
 # OS生成ファイル
 .DS_Store
 Thumbs.db

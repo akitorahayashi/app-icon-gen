@@ -101,6 +101,10 @@ void main() {
           File(path.join(appiconDir.path, 'AppIcon27.5x27.5@2x.png'));
       expect(icon27.existsSync(), isTrue);
 
+      // 41mm watch (追加)
+      final icon46 = File(path.join(appiconDir.path, 'AppIcon46x46@2x.png'));
+      expect(icon46.existsSync(), isTrue);
+
       // 44mm watch
       final icon50 = File(path.join(appiconDir.path, 'AppIcon50x50@2x.png'));
       expect(icon50.existsSync(), isTrue);
@@ -108,6 +112,10 @@ void main() {
       // 45mm watch
       final icon51 = File(path.join(appiconDir.path, 'AppIcon51x51@2x.png'));
       expect(icon51.existsSync(), isTrue);
+
+      // 通知センター (追加)
+      final icon33 = File(path.join(appiconDir.path, 'AppIcon33x33@2x.png'));
+      expect(icon33.existsSync(), isTrue);
 
       // 49mm watch
       final icon54 = File(path.join(appiconDir.path, 'AppIcon54x54@2x.png'));

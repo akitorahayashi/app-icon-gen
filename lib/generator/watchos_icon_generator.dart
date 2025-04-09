@@ -75,6 +75,14 @@ class WatchOSIconGenerator {
           filename: 'AppIcon27.5x27.5@2x.png',
           role: 'notificationCenter',
           subtype: '42mm'),
+      // 通知センター
+      WatchOSIconTemplate(
+          size: 33,
+          scale: 2,
+          idiom: 'watch',
+          filename: 'AppIcon33x33@2x.png',
+          role: 'notificationCenter',
+          subtype: '45mm'),
 
       // コンパニオン設定
       WatchOSIconTemplate(
@@ -105,6 +113,13 @@ class WatchOSIconGenerator {
           filename: 'AppIcon44x44@2x.png',
           role: 'appLauncher',
           subtype: '40mm'),
+      WatchOSIconTemplate(
+          size: 46,
+          scale: 2,
+          idiom: 'watch',
+          filename: 'AppIcon46x46@2x.png',
+          role: 'appLauncher',
+          subtype: '41mm'),
       WatchOSIconTemplate(
           size: 50,
           scale: 2,
