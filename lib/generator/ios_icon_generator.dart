@@ -102,11 +102,6 @@ class IOSIconGenerator {
       // iPhone用アイコン
       IOSIconTemplate(
           size: 20,
-          scale: 1,
-          idiom: 'iphone',
-          filename: 'Icon-App-20x20@1x.png'),
-      IOSIconTemplate(
-          size: 20,
           scale: 2,
           idiom: 'iphone',
           filename: 'Icon-App-20x20@2x.png'),
