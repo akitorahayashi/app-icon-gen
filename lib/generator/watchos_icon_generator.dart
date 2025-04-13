@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as path;
-import '../model/watchos_icon_template.dart';
 import '../content/watchos_icon_content.dart';
 
 /// watchOS向けアイコン生成クラス

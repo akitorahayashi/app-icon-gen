@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as path;
-import '../model/ios_icon_template.dart';
 import '../content/ios_icon_content.dart';
 
 /// iOS向けアイコン生成クラス

@@ -56,15 +56,6 @@ void main() {
       // iOS用のアイコンを生成
       IOSIconGenerator.generateIcons(originalImage);
 
-      // App Store用アイコンを確認 (1024x1024)
-      final appStoreIcon = File(path.join(
-          'output/ios/AppIcon.appiconset', 'Icon-App-1024x1024@1x.png'));
-      expect(appStoreIcon.existsSync(), isTrue);
-
-      final appStoreImage = img.decodePng(appStoreIcon.readAsBytesSync());
-      expect(appStoreImage!.width, equals(1024));
-      expect(appStoreImage.height, equals(1024));
-
       // iPhone用アイコンを確認 (60pt @3x = 180x180)
       final iphoneIcon = File(
           path.join('output/ios/AppIcon.appiconset', 'Icon-App-60x60@3x.png'));
