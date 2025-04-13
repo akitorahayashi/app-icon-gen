@@ -18,7 +18,7 @@ class IOSIconTemplate {
   /// アピアランス (luminosity:dark など)
   final Map<String, String>? appearance;
 
-  IOSIconTemplate({
+  const IOSIconTemplate({
     required this.size,
     required this.scale,
     required this.idiom,

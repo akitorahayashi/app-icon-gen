@@ -1,29 +1,10 @@
 import 'dart:io';
 import 'package:image/image.dart' as img;
+import 'package:path/path.dart' as path;
+import '../content/android_icon_content.dart'; // 新しいインポート
 
 /// Android向けアイコン生成クラス
 class AndroidIconGenerator {
-  // 標準的なAndroidアイコンサイズ (px) - 典型的なアイコンサイズ
-  static const Map<String, int> _densitySizes = {
-    'mdpi': 48, // 1.0x
-    'hdpi': 72, // 1.5x
-    'xhdpi': 96, // 2.0x
-    'xxhdpi': 144, // 3.0x
-    'xxxhdpi': 192 // 4.0x
-  };
-
-  // アダプティブアイコンサイズ (px)
-  static const Map<String, int> _adaptiveSizes = {
-    'mdpi': 108, // 1.0x
-    'hdpi': 162, // 1.5x
-    'xhdpi': 216, // 2.0x
-    'xxhdpi': 324, // 3.0x
-    'xxxhdpi': 432, // 4.0x
-  };
-
-  // Play Store用アイコンサイズ (px)
-  static const int _playStoreIconSize = 512;
-
   /// Android用のアイコンを生成
   static void generateIcons(img.Image originalImage) {
     print('Android用アイコンを生成中...');
@@ -46,7 +27,7 @@ class AndroidIconGenerator {
   /// 必要なディレクトリを作成
   static void _ensureDirectoriesExist() {
     // 各密度のミップマップディレクトリ
-    for (final density in _densitySizes.keys) {
+    for (final density in kTraditionalDensitySizes.keys) {
       Directory('output/android/mipmap-$density').createSync(recursive: true);
     }
 
@@ -62,7 +43,7 @@ class AndroidIconGenerator {
 
   /// 標準的なアイコンを生成（古いAndroid用）
   static void _generateTraditionalIcons(img.Image originalImage) {
-    for (final entry in _densitySizes.entries) {
+    for (final entry in kTraditionalDensitySizes.entries) {
       final density = entry.key;
       final size = entry.value;
 
@@ -88,21 +69,20 @@ class AndroidIconGenerator {
   /// 特定の密度のアダプティブアイコンを生成（Android 8.0+用）
   static void _generateAdaptiveIconsForDensity(
       img.Image originalImage, String density) {
-    final adaptiveSize = _adaptiveSizes[density]!;
+    final size = kAdaptiveSizes[density]!;
     final outputDir = 'output/android/mipmap-$density';
 
     // 前景レイヤーを作成
-    final foregroundImage = _createForegroundLayer(originalImage, adaptiveSize);
+    final foregroundImage = _createForegroundLayer(originalImage, size);
     File('$outputDir/ic_launcher_foreground.png')
         .writeAsBytesSync(img.encodePng(foregroundImage));
 
     // 背景レイヤーを作成
-    final backgroundImage = _createBackgroundLayer(adaptiveSize);
+    final backgroundImage = _createBackgroundLayer(size);
     File('$outputDir/ic_launcher_background.png')
         .writeAsBytesSync(img.encodePng(backgroundImage));
 
-    print(
-        'Androidアダプティブアイコン作成: Directory: \'$outputDir\' (${adaptiveSize}x$adaptiveSize)');
+    print('Androidアダプティブアイコン作成: Directory: \'$outputDir\' (${size}x$size)');
   }
 
   /// アダプティブアイコン用のXMLファイルを生成
@@ -140,7 +120,7 @@ class AndroidIconGenerator {
   /// アダプティブアイコンを生成（Android 8.0+用）
   static void _generateAdaptiveIcons(img.Image originalImage) {
     // 各密度のアダプティブアイコンを生成
-    for (final density in _densitySizes.keys) {
+    for (final density in kAdaptiveSizes.keys) {
       _generateAdaptiveIconsForDensity(originalImage, density);
     }
 
@@ -150,7 +130,7 @@ class AndroidIconGenerator {
 
   /// Play Store用アイコンを生成
   static void _generatePlayStoreIcon(img.Image originalImage) {
-    final size = _playStoreIconSize;
+    final size = kPlayStoreSize;
     final resized = img.copyResize(originalImage, width: size, height: size);
 
     final output = 'output/android/playstore/play_store_icon.png';

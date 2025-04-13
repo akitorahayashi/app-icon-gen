@@ -18,7 +18,7 @@ class WatchOSIconTemplate {
   /// サブタイプ (38mm, 42mm など)
   final String? subtype;
 
-  WatchOSIconTemplate({
+  const WatchOSIconTemplate({
     required this.size,
     required this.scale,
     required this.idiom,
