@@ -44,6 +44,12 @@ const List<IOSIconTemplate> kIosTraditionalIconTemplates = [
       scale: 2,
       idiom: 'ipad',
       filename: 'Icon-App-83.5x83.5@2x.png'),
+  // App Store用アイコン
+  IOSIconTemplate(
+      size: 1024,
+      scale: 1,
+      idiom: 'ios-marketing',
+      filename: 'Icon-App-1024x1024@1x.png'),
 ];
 
 /// 最新のiOS用アイコンテンプレートリスト

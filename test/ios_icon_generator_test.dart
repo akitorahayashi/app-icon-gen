@@ -66,6 +66,29 @@ void main() {
       expect(iphoneImage.height, equals(180));
     });
 
+    test('App Store用アイコンが正しく生成される', () async {
+      // テスト前にディレクトリをクリーンアップ
+      if (iosOutputDir.existsSync()) {
+        iosOutputDir.deleteSync(recursive: true);
+      }
+
+      // サンプル画像を読み込む
+      final bytes = testImage.readAsBytesSync();
+      final originalImage = img.decodeImage(bytes)!;
+
+      // iOS用のアイコンを生成
+      IOSIconGenerator.generateIcons(originalImage);
+
+      // App Store用アイコンを確認 (1024pt @1x = 1024x1024)
+      final appStoreIcon = File(path.join(
+          'output/ios/AppIcon.appiconset', 'Icon-App-1024x1024@1x.png'));
+      expect(appStoreIcon.existsSync(), isTrue);
+
+      final appStoreImage = img.decodePng(appStoreIcon.readAsBytesSync());
+      expect(appStoreImage!.width, equals(1024));
+      expect(appStoreImage.height, equals(1024));
+    });
+
     test('iOS 17用の最新形式アイコンが生成される', () async {
       // テスト前にディレクトリをクリーンアップ
       if (iosOutputDir.existsSync()) {
