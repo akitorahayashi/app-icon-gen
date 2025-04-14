@@ -67,15 +67,19 @@ void run(List<String> arguments) {
     print('画像を処理中: $inputPath');
 
     // プラットフォームごとに処理
+    String outputPath = '';
     switch (platform) {
       case 'ios':
         IOSIconGenerator.generateIcons(originalImage);
+        outputPath = path.join(Directory.current.path, 'output', 'ios');
         break;
       case 'android':
         AndroidIconGenerator.generateIcons(originalImage);
+        outputPath = path.join(Directory.current.path, 'output', 'android');
         break;
       case 'watchos':
         WatchOSIconGenerator.generateIcons(originalImage);
+        outputPath = path.join(Directory.current.path, 'output', 'watchos');
         break;
       default:
         throw Exception(
@@ -83,6 +87,7 @@ void run(List<String> arguments) {
     }
 
     print('アイコン生成が正常に完了しました！');
+    print('生成されたアイコンのパス: $outputPath');
   } on FormatException catch (e) {
     print('エラー: コマンドライン引数の解析に失敗しました: $e');
     _printUsage(parser);
