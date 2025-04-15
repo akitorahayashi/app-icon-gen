@@ -1,27 +1,38 @@
-# This file configures the static analysis results for your project (errors,
-# warnings, and lints).
-#
-# This enables the 'recommended' set of lints from `package:lints`.
-# This set helps identify many issues that may lead to problems when running
-# or consuming Dart code, and enforces writing Dart using a single, idiomatic
-# style and format.
-#
-# If you want a smaller set of lints you can change this to specify
-# 'package:lints/core.yaml'. These are just the most critical lints
-# (the recommended set includes the core lints).
-# The core lints are also what is used by pub.dev for scoring packages.
+# Format: dart format .
+# Lint: dart analyze
 
-include: package:lints/recommended.yaml  # Dartの推奨リントルールを適用する基本設定
-
-# For more information about the core and recommended set of lints, see
-# https://dart.dev/go/core-lints
-
-# For additional information about configuring this file, see
-# https://dart.dev/guides/language/analysis-options
+include: package:flutter_lints/flutter.yaml
 
 analyzer:
   exclude:
-    - output/**  # 生成されたファイルを解析から除外
+    - '**/*.g.dart'
+    - '**/*.freezed.dart'
+    - 'build/**'
+    - '.dart_tool/**'
+    - '.github/**'
+    - '.vscode/**'
+    - '.idea/**'
+    - 'output/**'  # 生成されたファイルを解析から除外
+  language:
+    strict-raw-types: true
   errors:
     todo: info  # TODOコメントをエラーではなく情報として表示
     avoid_print: ignore  # CLIツールで使用するprint文の警告を無視
+
+linter:
+  rules:
+    avoid_print: false  # CLIツールでprint文を許可
+    public_member_api_docs: false
+
+    # コード複雑性の制限
+    function_body_lines_limit: 50 
+    class_member_lines_limit: 300
+    file_lines_limit: 500       
+    cyclomatic_complexity: 10    
+    block_nesting_depth: 5      
+
+# formatter設定
+# 'dart format' コマンド使用時に適用
+formatter:
+  line_length: 120 
+  indent: ['space', 2]
