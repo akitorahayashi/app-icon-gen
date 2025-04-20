@@ -1,0 +1,66 @@
+name: App Icon Gen CI
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+  workflow_dispatch:
+
+jobs:
+  format-and-lint:
+    name: Format and Lint
+    uses: ./.github/workflows/format-and-lint.yml
+
+  test:
+    name: Run Unit Tests
+    uses: ./.github/workflows/run-unit-tests.yml
+
+  integration:
+    name: Run Integration Tests
+    needs: test
+    uses: ./.github/workflows/run-integration-tests.yml
+
+  review:
+    name: Request Copilot Review
+    permissions:
+      pull-requests: write
+      contents: read
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/copilot-pr-review.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+    needs: format-and-lint
+    secrets: inherit
+
+  report:
+    name: Test Report
+    needs: integration
+    if: github.event_name == 'pull_request'
+    permissions:
+      checks: write
+      actions: read
+      pull-requests: write
+    uses: ./.github/workflows/test-reporter.yml
+    with:
+      pull_request_number: ${{ github.event.pull_request.number }}
+      download-path: ./test-results
+      artifact-name: integration-test-results
+    secrets: inherit
+
+  notify:
+    name: Notify Completion
+    needs: [format-and-lint, test, integration, review, report]
+    if: github.event_name == 'pull_request' && always()
+    permissions:
+      pull-requests: write
+    uses: ./.github/workflows/notify-completion.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+      format_lint_result: ${{ needs.format-and-lint.result }}
+      unit_tests_result: ${{ needs.test.result }}
+      integration_tests_result: ${{ needs.integration.result }}
+      copilot_review_result: ${{ needs.review.result || 'skipped' }}
+      test_report_result: ${{ needs.report.result || 'skipped' }}
+    secrets:
+      gh_token: ${{ secrets.GITHUB_TOKEN }} 

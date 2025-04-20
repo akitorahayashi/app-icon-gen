@@ -1,0 +1,119 @@
+name: Notify Completion Reusable Workflow
+
+on:
+  workflow_call:
+    inputs:
+      pr_number:
+        description: 'The pull request number'
+        required: true
+        type: number
+      format_lint_result:
+        description: 'Result of the format-and-lint job'
+        required: true
+        type: string
+      unit_tests_result:
+        description: 'Result of the run-unit-tests job'
+        required: true
+        type: string
+      integration_tests_result:
+        description: 'Result of the run-integration-tests job'
+        required: true
+        type: string
+      copilot_review_result:
+        description: 'Result of the copilot-review job'
+        required: true
+        type: string
+      test_report_result:
+        description: 'Result of the test-report job'
+        required: true
+        type: string
+    secrets:
+      gh_token:
+        description: 'GitHub Token for API calls'
+        required: true
+
+jobs:
+  notify:
+    name: Post Completion Status
+    permissions:
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine Overall Status Icon
+        id: status-icon
+        run: |
+          ICON="✅"
+          if [[ "${{ inputs.format_lint_result }}" == "failure" || \
+                "${{ inputs.unit_tests_result }}" == "failure" || \
+                "${{ inputs.integration_tests_result }}" == "failure" ]]; then
+            ICON="❌"
+          fi
+          # Optional jobs only fail if they explicitly failed (not skipped)
+          if [[ "${{ inputs.copilot_review_result }}" == "failure" ]]; then
+              ICON="❌"
+          fi
+          if [[ "${{ inputs.test_report_result }}" == "failure" ]]; then
+              ICON="❌"
+          fi
+          echo "icon=$ICON" >> $GITHUB_OUTPUT
+
+      - name: Post Status Comment
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.gh_token }}
+          script: |
+            const prNumber = ${{ inputs.pr_number }};
+            // No need to check prNumber again as it's required by workflow_call
+            const { owner, repo } = context.repo;
+
+            const getStatusEmoji = (result) => {
+              if (result === 'success') return '✅';
+              if (result === 'failure') return '❌';
+              if (result === 'skipped') return '⏭️';
+              if (!result || result === '' || result === 'cancelled') return '❓'; // Handle potential other states
+              return '❓';
+            };
+
+            // Combine unit and integration test results
+            const buildTestResult = ('${{ inputs.unit_tests_result }}' === 'success' && '${{ inputs.integration_tests_result }}' === 'success')
+                                    ? 'success'
+                                    : (('${{ inputs.unit_tests_result }}' === 'failure' || '${{ inputs.integration_tests_result }}' === 'failure') ? 'failure' : 'skipped');
+            const buildTestEmoji = getStatusEmoji(buildTestResult);
+
+            const codeQualityEmoji = getStatusEmoji('${{ inputs.format_lint_result }}');
+            // Default to skipped if result is not provided or empty
+            const testReportEmoji = getStatusEmoji('${{ inputs.test_report_result || 'skipped' }}');
+            const codeReviewEmoji = getStatusEmoji('${{ inputs.copilot_review_result || 'skipped' }}');
+
+            const overallIcon = '${{ steps.status-icon.outputs.icon }}';
+
+            // Determine overall message based on core test results
+            const overallMessage = (buildTestResult === 'success') ? 'ビルドとテストが成功しました' : 'ビルドまたはテストに失敗しました';
+
+            const commentBody = `## CI/CD Pipeline Completed ${overallIcon}\n\n` +
+                              `${overallMessage}\n\n` +
+                              `### ステータス概要:\n` +
+                              `- コード品質チェック: ${codeQualityEmoji}\n` +
+                              `- ビルドとテスト: ${buildTestEmoji} (Unit: ${getStatusEmoji('${{ inputs.unit_tests_result }}')}, Integration: ${getStatusEmoji('${{ inputs.integration_tests_result }}')})\n` +
+                              `- テスト結果レポート: ${testReportEmoji}\n` +
+                              `- コードレビュー: ${codeReviewEmoji}`;
+
+            const commentMarker = '<!-- ci-status-summary -->';
+            const bodyWithMarker = `${commentMarker}\n${commentBody}`;
+
+            try {
+              const { data: comments } = await github.rest.issues.listComments({ owner, repo, issue_number: prNumber });
+              const existingComment = comments.find(c => c.user && c.user.login === 'github-actions[bot]' && c.body.includes(commentMarker));
+
+              if (existingComment) {
+                console.log(`Updating comment ${existingComment.id} on PR #${prNumber}`);
+                await github.rest.issues.updateComment({ owner, repo, comment_id: existingComment.id, body: bodyWithMarker });
+              } else {
+                console.log(`Creating new status comment on PR #${prNumber}`);
+                await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body: bodyWithMarker });
+              }
+            } catch (error) {
+              console.error("Error posting or updating comment:", error);
+              // Consider failing the step if comment posting fails
+              // core.setFailed(`Failed to post status comment: ${error.message}`);
+            } 
