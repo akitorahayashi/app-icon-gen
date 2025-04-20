@@ -45,7 +45,7 @@ jobs:
     with:
       pull_request_number: ${{ github.event.pull_request.number }}
       download-path: ./test-results
-      artifact-name: test-results
+      artifact-name: integration-test-results
     secrets: inherit
 
   notify:
