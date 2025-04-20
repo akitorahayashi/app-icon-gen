@@ -12,6 +12,15 @@ jobs:
     name: Format and Lint
     uses: ./.github/workflows/format-and-lint.yml
 
+  run-unit-tests:
+    name: Run Unit Tests
+    uses: ./.github/workflows/run-unit-tests.yml
+
+  run-integration-tests:
+    name: Run Integration Tests
+    needs: run-unit-tests
+    uses: ./.github/workflows/run-integration-tests.yml
+
   copilot-review:
     name: Request Copilot Review
     permissions:
@@ -22,14 +31,34 @@ jobs:
     with:
       pr_number: ${{ github.event.pull_request.number }}
     needs: format-and-lint
-    secrets: inherit 
+    secrets: inherit
 
-  run-unit-tests:
-    name: Run Unit Tests
-    uses: ./.github/workflows/run-unit-tests.yml
+  test-report:
+    name: Test Report
+    needs: run-integration-tests
+    if: github.event_name == 'pull_request'
+    permissions:
+      checks: write
+      actions: read
+      pull-requests: write
+    uses: ./.github/workflows/test-reporter.yml
+    with:
+      pull_request_number: ${{ github.event.pull_request.number }}
+    secrets: inherit
 
-  run-integration-tests:
-    name: Run Integration Tests
-    needs: run-unit-tests
-    uses: ./.github/workflows/run-integration-tests.yml
-    
+  notify-completion:
+    name: Notify Completion
+    needs: [format-and-lint, run-unit-tests, run-integration-tests, copilot-review, test-report]
+    if: github.event_name == 'pull_request' && always()
+    permissions:
+      pull-requests: write
+    uses: ./.github/workflows/notify-completion.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+      format_lint_result: ${{ needs.format-and-lint.result }}
+      unit_tests_result: ${{ needs.run-unit-tests.result }}
+      integration_tests_result: ${{ needs.run-integration-tests.result }}
+      copilot_review_result: ${{ needs.copilot-review.result || 'skipped' }}
+      test_report_result: ${{ needs.test-report.result || 'skipped' }}
+    secrets:
+      gh_token: ${{ secrets.GITHUB_TOKEN }} 

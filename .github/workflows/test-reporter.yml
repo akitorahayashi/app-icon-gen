@@ -1,0 +1,105 @@
+name: Test Reporter
+
+on:
+  workflow_call:
+    inputs:
+      pull_request_number:
+        description: 'Pull Request number'
+        required: true
+        type: number
+
+permissions:
+  checks: write          # JUnitレポートをChecksとして表示するために必要
+  actions: read          # アーティファクトをダウンロードするために必要
+  pull-requests: write   # PRにコメントするために必要
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code # jq を使うためにリポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Download test results artifact
+        uses: actions/download-artifact@v4
+        with:
+          # IMPORTANT: Ensure this matches the artifact name uploaded by run-unit-tests/run-integration-tests
+          name: test-results 
+          path: ./ci-outputs/test-results
+
+      - name: List downloaded files (for debugging)
+        run: |
+          echo "--- Downloaded Test Artifacts ---"
+          ls -lR ./ci-outputs/test-results || echo "No artifacts found at ./ci-outputs/test-results"
+
+      - name: Publish Test Report as Check
+        uses: mikepenz/action-junit-report@v4
+        # JUnitファイルが存在する場合のみ実行
+        # IMPORTANT: Ensure these paths match where your tests actually output JUnit XML
+        if: ${{ hashFiles('./ci-outputs/test-results/unit/junit.xml') != '' || hashFiles('./ci-outputs/test-results/ui/junit.xml') != '' }}
+        with:
+          report_paths: './ci-outputs/test-results/unit/junit.xml,./ci-outputs/test-results/ui/junit.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          fail_on_failure: false # レポートステップ自体は失敗させない
+          require_tests: false # テストがなくてもエラーにしない
+          check_name: 'Test Suite Results' # Checksタブに表示される名前
+
+      - name: Create or Update PR Comment (Test Summary)
+        # Run if any JUnit XML report was found
+        if: ${{ hashFiles('./ci-outputs/test-results/**/*.xml') != '' }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = ${{ inputs.pull_request_number }};
+            if (!prNumber) {
+              console.error('Could not extract pull request number.');
+              return;
+            }
+
+            const { owner, repo } = context.repo;
+
+            // Use a different marker than the status summary comment
+            const commentMarker = '<!-- test-results-summary -->'; 
+            let commentBody = `${commentMarker}\n\n## Test Summary\n\n`;
+            const fs = require('fs');
+
+            // Check specific JUnit file paths
+            const unitTestFile = './ci-outputs/test-results/unit/junit.xml';
+            const uiTestFile = './ci-outputs/test-results/ui/junit.xml';
+            let reportFound = false;
+            if (fs.existsSync(unitTestFile)) {
+              console.log('Unit test report found.');
+              reportFound = true;
+            }
+            if (fs.existsSync(uiTestFile)) {
+              console.log('UI test report found.');
+              reportFound = true;
+            }
+
+            if (reportFound) {
+               commentBody += `✅ Test Results: Available in Checks tab.\n`;
+            } else {
+               commentBody += `ℹ️ Test Results: No JUnit reports found at expected paths.\n`;
+            }
+
+            try {
+              // 既存コメントの検索・更新 or 新規作成
+              const { data: comments } = await github.rest.issues.listComments({ owner, repo, issue_number: prNumber });
+              const existingComment = comments.find(c => c.user && c.user.login === 'github-actions[bot]' && c.body.includes(commentMarker));
+
+              if (existingComment) {
+                console.log(`Updating test summary comment ${existingComment.id} on PR #${prNumber}`);
+                // Only update if body content has changed (simple check)
+                if (existingComment.body !== commentBody) {
+                    await github.rest.issues.updateComment({ owner, repo, comment_id: existingComment.id, body: commentBody });
+                } else {
+                    console.log('Test summary comment content unchanged.');
+                }
+              } else {
+                console.log(`Creating new test summary comment on PR #${prNumber}`);
+                await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body: commentBody });
+              }
+            } catch (error) {
+                console.error("Error posting or updating test summary comment:", error);
+            } 

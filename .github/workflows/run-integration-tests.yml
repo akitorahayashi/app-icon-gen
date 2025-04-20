@@ -6,7 +6,7 @@ on:
 jobs:
   integration-test:
     name: Run Integration Tests
-    runs-on: macos-latest # このジョブはmacos-latestが必要
+    runs-on: ubuntu-latest
     
     steps:
       - name: Checkout
@@ -24,6 +24,8 @@ jobs:
         run: chmod +x app-icon-gen.sh
         
       - name: Verify iOS Icon Output
+        id: test_ios
+        continue-on-error: true
         run: |
           # iOSアイコン生成の検証
           ./app-icon-gen.sh -p ios assets/icon_gen_sample.png
@@ -41,8 +43,11 @@ jobs:
           fi
           
           echo "iOS icon generation: SUCCESS ✅"
+          >> integration_test_results.txt 2>&1 || echo "iOS icon generation: FAILED ❌" >> integration_test_results.txt
 
       - name: Verify Android Icon Output
+        id: test_android
+        continue-on-error: true
         run: |
           # Androidアイコン生成の検証
           ./app-icon-gen.sh -p android assets/icon_gen_sample.png
@@ -60,8 +65,11 @@ jobs:
           fi
           
           echo "Android icon generation: SUCCESS ✅"
+          >> integration_test_results.txt 2>&1 || echo "Android icon generation: FAILED ❌" >> integration_test_results.txt
 
       - name: Verify watchOS Icon Output
+        id: test_watchos
+        continue-on-error: true
         run: |
           # watchOSアイコン生成の検証
           ./app-icon-gen.sh -p watchos assets/icon_gen_sample.png
@@ -78,4 +86,15 @@ jobs:
             exit 1
           fi
           
-          echo "watchOS icon generation: SUCCESS ✅" 
+          echo "watchOS icon generation: SUCCESS ✅"
+          >> integration_test_results.txt 2>&1 || echo "watchOS icon generation: FAILED ❌" >> integration_test_results.txt
+
+      - name: Upload integration test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: integration-test-results
+          path: integration_test_results.txt
+
+      - name: Check test outcomes
+        if: steps.test_ios.outcome == 'failure' || steps.test_android.outcome == 'failure' || steps.test_watchos.outcome == 'failure'
+        run: exit 1 
