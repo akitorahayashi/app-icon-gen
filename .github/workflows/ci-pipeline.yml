@@ -12,16 +12,16 @@ jobs:
     name: Format and Lint
     uses: ./.github/workflows/format-and-lint.yml
 
-  run-unit-tests:
+  test:
     name: Run Unit Tests
     uses: ./.github/workflows/run-unit-tests.yml
 
-  run-integration-tests:
+  integration:
     name: Run Integration Tests
-    needs: run-unit-tests
+    needs: test
     uses: ./.github/workflows/run-integration-tests.yml
 
-  copilot-review:
+  review:
     name: Request Copilot Review
     permissions:
       pull-requests: write
@@ -33,9 +33,9 @@ jobs:
     needs: format-and-lint
     secrets: inherit
 
-  test-report:
+  report:
     name: Test Report
-    needs: run-integration-tests
+    needs: integration
     if: github.event_name == 'pull_request'
     permissions:
       checks: write
@@ -46,9 +46,9 @@ jobs:
       pull_request_number: ${{ github.event.pull_request.number }}
     secrets: inherit
 
-  notify-completion:
+  notify:
     name: Notify Completion
-    needs: [format-and-lint, run-unit-tests, run-integration-tests, copilot-review, test-report]
+    needs: [format-and-lint, test, integration, review, report]
     if: github.event_name == 'pull_request' && always()
     permissions:
       pull-requests: write
@@ -56,9 +56,9 @@ jobs:
     with:
       pr_number: ${{ github.event.pull_request.number }}
       format_lint_result: ${{ needs.format-and-lint.result }}
-      unit_tests_result: ${{ needs.run-unit-tests.result }}
-      integration_tests_result: ${{ needs.run-integration-tests.result }}
-      copilot_review_result: ${{ needs.copilot-review.result || 'skipped' }}
-      test_report_result: ${{ needs.test-report.result || 'skipped' }}
+      unit_tests_result: ${{ needs.test.result }}
+      integration_tests_result: ${{ needs.integration.result }}
+      copilot_review_result: ${{ needs.review.result || 'skipped' }}
+      test_report_result: ${{ needs.report.result || 'skipped' }}
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }} 

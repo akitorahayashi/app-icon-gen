@@ -1,10 +1,10 @@
-# CI/CD Workflows
+# CI Workflows
 
 このディレクトリには `app-icon-gen` CLIツール用の GitHub Actions ワークフローファイルが含まれています。
 
 ## ファイル構成
 
-- **`ci-cd-pipeline.yml`**: メインとなる統合CIパイプライン。Pull Request作成時や`main`ブランチへのプッシュ時、または手動でトリガーされ、後述の他のワークフローを順次実行します。
+- **`ci-pipeline.yml`**: メインとなる統合CIパイプライン。Pull Request作成時や`main`ブランチへのプッシュ時、または手動でトリガーされ、後述の他のワークフローを順次実行します。
 - **`format-and-lint.yml`**: コードのフォーマットチェック (`dart format`) と静的解析 (`dart analyze`) を実行する再利用可能ワークフロー。
 - **`run-unit-tests.yml`**: ユニットテスト (`dart test`) を実行し、結果をテキストファイルとしてアーティファクトにアップロードする再利用可能ワークフロー。
 - **`run-integration-tests.yml`**: 統合テストとして、各プラットフォーム (iOS, Android, watchOS) 向けのアイコン生成スクリプト (`app-icon-gen.sh`) を実行し、期待される出力ファイルが存在するかを検証する再利用可能ワークフロー。結果はテキストファイルとしてアーティファクトにアップロードされます。
@@ -14,8 +14,8 @@
 
 ## CIの特徴
 
-### モジュラー設計
-メインの`ci-cd-pipeline.yml`が、フォーマット/Lintチェック、ユニットテスト、統合テスト、Copilotレビューリクエスト、テストレポート、完了通知といった個別の再利用可能ワークフローを呼び出す構造になっています。
+### ワークフローの分割
+メインの`ci-pipeline.yml`が、フォーマット/Lintチェック、ユニットテスト、統合テスト、Copilotレビューリクエスト、テストレポート、完了通知といった個別の再利用可能ワークフローを呼び出す構造になっています。
 
 ### 包括的な検証プロセス
 Pull Requestや`main`ブランチへのプッシュ時に、以下の自動チェックを実行します:
@@ -38,9 +38,7 @@ Pull Requestに対して、以下の自動処理を行います:
 
 ## 機能詳細
 
-各ワークフローの概要は以下の通りです。
-
-### `ci-cd-pipeline.yml` (メインパイプライン)
+### `ci-pipeline.yml` (メインパイプライン)
 
 - **トリガー**: `main`/`master`へのPush、`main`/`master`ターゲットのPR、手動実行 (`workflow_dispatch`)
 - **処理**:
@@ -53,7 +51,7 @@ Pull Requestに対して、以下の自動処理を行います:
 
 ### `format-and-lint.yml` (フォーマット & Lint)
 
-- **トリガー**: `ci-cd-pipeline.yml` から `workflow_call` で呼び出し
+- **トリガー**: `ci-pipeline.yml` から `workflow_call` で呼び出し
 - **処理**:
     1.  Dart SDK セットアップ
     2.  依存関係インストール (`dart pub get`)
@@ -63,7 +61,7 @@ Pull Requestに対して、以下の自動処理を行います:
 
 ### `run-unit-tests.yml` (ユニットテスト実行)
 
-- **トリガー**: `ci-cd-pipeline.yml` から `workflow_call` で呼び出し
+- **トリガー**: `ci-pipeline.yml` から `workflow_call` で呼び出し
 - **処理**:
     1.  Dart SDK セットアップ
     2.  依存関係インストール (`dart pub get`)
@@ -74,7 +72,7 @@ Pull Requestに対して、以下の自動処理を行います:
 
 ### `run-integration-tests.yml` (統合テスト実行)
 
-- **トリガー**: `ci-cd-pipeline.yml` から `workflow_call` で呼び出し
+- **トリガー**: `ci-pipeline.yml` から `workflow_call` で呼び出し
 - **処理**:
     1.  Dart SDK セットアップ
     2.  依存関係インストール (`dart pub get`)
@@ -86,7 +84,7 @@ Pull Requestに対して、以下の自動処理を行います:
 
 ### `test-reporter.yml` (テスト結果レポート)
 
-- **トリガー**: `ci-cd-pipeline.yml` から `workflow_call` で呼び出し (PR時)
+- **トリガー**: `ci-pipeline.yml` から `workflow_call` で呼び出し (PR時)
 - **処理**:
     1.  `test-results` アーティファクトを `./ci-outputs/test-results` にダウンロード (注意: 名前が不一致の可能性)
     2.  `./ci-outputs/test-results/unit/junit.xml` または `ui/junit.xml` が存在すれば、`mikepenz/action-junit-report` を使用してChecksタブにレポートを表示
@@ -94,14 +92,14 @@ Pull Requestに対して、以下の自動処理を行います:
 
 ### `copilot-pr-review.yml` (Copilotレビュー依頼)
 
-- **トリガー**: `ci-cd-pipeline.yml` から `workflow_call` で呼び出し (PR時)
+- **トリガー**: `ci-pipeline.yml` から `workflow_call` で呼び出し (PR時)
 - **処理**:
     1.  入力されたPR番号に対して `copilot` をレビュアーとして追加リクエスト
     2.  失敗した場合、エラー理由を含むコメントをPRに投稿
 
 ### `notify-completion.yml` (完了通知)
 
-- **トリガー**: `ci-cd-pipeline.yml` から `workflow_call` で呼び出し (PR時、常に実行)
+- **トリガー**: `ci-pipeline.yml` から `workflow_call` で呼び出し (PR時、常に実行)
 - **処理**:
     1.  各先行ジョブ (format/lint, unit tests, integration tests, copilot review, test report) の結果を受け取る
     2.  全体ステータスアイコンを決定
@@ -109,13 +107,13 @@ Pull Requestに対して、以下の自動処理を行います:
 
 ## 使用方法
 
-メインパイプライン (`ci-cd-pipeline.yml`) は以下のタイミングで自動実行されます:
+メインパイプライン (`ci-pipeline.yml`) は以下のタイミングで自動実行されます:
 
 - **プッシュ時**: `main` または `master` ブランチへのプッシュ
 - **PR作成/更新時**: `main` または `master` ブランチをターゲットとするPull Request
-- **手動実行**: GitHub Actionsタブから `ci-cd-pipeline.yml` を選択して実行可能
+- **手動実行**: GitHub Actionsタブから `ci-pipeline.yml` を選択して実行可能
 
-個別のワークフローは通常、直接実行するのではなく、`ci-cd-pipeline.yml` によって呼び出されます。
+個別のワークフローは通常、直接実行するのではなく、`ci-pipeline.yml` によって呼び出されます。
 
 ## 技術仕様
 
