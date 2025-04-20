@@ -1,4 +1,4 @@
-name: Notify Completion Reusable Workflow
+name: Notify Completion
 
 on:
   workflow_call:
@@ -12,19 +12,19 @@ on:
         required: true
         type: string
       unit_tests_result:
-        description: 'Result of the run-unit-tests job'
+        description: 'Result of the unit-test job'
         required: true
         type: string
       integration_tests_result:
-        description: 'Result of the run-integration-tests job'
+        description: 'Result of the integration-test job'
         required: true
         type: string
       copilot_review_result:
-        description: 'Result of the copilot-review job'
+        description: 'Result of the review job'
         required: true
         type: string
       test_report_result:
-        description: 'Result of the test-report job'
+        description: 'Result of the report job'
         required: true
         type: string
     secrets:
@@ -34,7 +34,6 @@ on:
 
 jobs:
   notify:
-    name: Post Completion Status
     permissions:
       pull-requests: write
     runs-on: ubuntu-latest

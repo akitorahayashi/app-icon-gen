@@ -12,13 +12,13 @@ jobs:
     name: Format and Lint
     uses: ./.github/workflows/format-and-lint.yml
 
-  test:
+  unit-test:
     name: Run Unit Tests
     uses: ./.github/workflows/run-unit-tests.yml
 
-  integration:
+  integration-test:
     name: Run Integration Tests
-    needs: test
+    needs: unit-test
     uses: ./.github/workflows/run-integration-tests.yml
 
   review:
@@ -35,7 +35,7 @@ jobs:
 
   report:
     name: Test Report
-    needs: integration
+    needs: integration-test
     if: github.event_name == 'pull_request'
     permissions:
       checks: write
@@ -50,7 +50,7 @@ jobs:
 
   notify:
     name: Notify Completion
-    needs: [format-and-lint, test, integration, review, report]
+    needs: [format-and-lint, unit-test, integration-test, review, report]
     if: github.event_name == 'pull_request' && always()
     permissions:
       pull-requests: write
@@ -58,8 +58,8 @@ jobs:
     with:
       pr_number: ${{ github.event.pull_request.number }}
       format_lint_result: ${{ needs.format-and-lint.result }}
-      unit_tests_result: ${{ needs.test.result }}
-      integration_tests_result: ${{ needs.integration.result }}
+      unit_tests_result: ${{ needs.unit-test.result }}
+      integration_tests_result: ${{ needs.integration-test.result }}
       copilot_review_result: ${{ needs.review.result || 'skipped' }}
       test_report_result: ${{ needs.report.result || 'skipped' }}
     secrets:
