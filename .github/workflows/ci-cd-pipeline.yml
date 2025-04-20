@@ -14,6 +14,9 @@ jobs:
 
   copilot-review:
     name: Request Copilot Review
+    permissions:
+      pull-requests: write
+      contents: read
     if: github.event_name == 'pull_request'
     uses: ./.github/workflows/copilot-pr-review.yml
     with:
