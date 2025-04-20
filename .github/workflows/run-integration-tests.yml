@@ -90,11 +90,15 @@ jobs:
           >> integration_test_results.txt 2>&1 || echo "watchOS icon generation: FAILED ❌" >> integration_test_results.txt
 
       - name: Upload integration test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: integration-test-results
           path: integration_test_results.txt
 
       - name: Check test outcomes
         if: steps.test_ios.outcome == 'failure' || steps.test_android.outcome == 'failure' || steps.test_watchos.outcome == 'failure'
-        run: exit 1 
+        run: exit 1
+
+      - name: Clean up
+        run: rm -rf ./output 

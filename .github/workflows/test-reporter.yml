@@ -7,6 +7,14 @@ on:
         description: 'Pull Request number'
         required: true
         type: number
+      artifact-name:
+        description: 'Name of the artifact to download'
+        required: true
+        type: string
+      download-path:
+        description: 'Path where the artifact should be downloaded'
+        required: true
+        type: string
 
 permissions:
   checks: write          # JUnitレポートをChecksとして表示するために必要
@@ -20,12 +28,11 @@ jobs:
       - name: Checkout code # jq を使うためにリポジトリをチェックアウト
         uses: actions/checkout@v4
 
-      - name: Download test results artifact
+      - name: Download Test Results Artifacts
         uses: actions/download-artifact@v4
         with:
-          # IMPORTANT: Ensure this matches the artifact name uploaded by run-unit-tests/run-integration-tests
-          name: test-results 
-          path: ./ci-outputs/test-results
+          name: ${{ inputs.artifact-name }}
+          path: ${{ inputs.download-path }}
 
       - name: List downloaded files (for debugging)
         run: |
