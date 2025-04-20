@@ -1,70 +1,12 @@
-name: App Icon Gen CI
+name: Run Integration Tests
 
 on:
-  push:
-    branches: [ "master", "main" ]
-  pull_request:
-    branches: [ "master", "main" ]
-  workflow_dispatch:
+  workflow_call:
 
 jobs:
-  format-and-lint:
-    name: Format and Lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Dart
-        uses: dart-lang/setup-dart@v1
-        with:
-          sdk: 'stable'
-      
-      - name: Show Tool Versions
-        run: |
-          dart --version
-      
-      - name: Install dependencies
-        run: dart pub get
-        
-      - name: Run Dart Format Check
-        run: |
-          dart format --set-exit-if-changed .
-        
-      - name: Run Dart Analyze
-        run: |
-          dart analyze
-      
-      - name: Check for changes after formatting
-        run: |
-          git diff --exit-code || { echo "コードフォーマットの問題が見つかりました。ローカルで 'dart format .' を実行し、変更をコミットしてください。"; exit 1; }
-
-  test:
-    name: Test on macOS
-    runs-on: macos-latest
-    
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Dart
-        uses: dart-lang/setup-dart@v1
-        with:
-          sdk: 'stable'
-          
-      - name: Install dependencies
-        run: dart pub get
-        
-      - name: Set shell script permissions
-        run: chmod +x app-icon-gen.sh
-        
-      - name: Run platform tests
-        run: dart test
-        
-  integration:
-    name: Integration Tests
-    needs: test
-    runs-on: macos-latest
+  integration-test:
+    name: Run Integration Tests
+    runs-on: macos-latest # このジョブはmacos-latestが必要
     
     steps:
       - name: Checkout
@@ -136,4 +78,4 @@ jobs:
             exit 1
           fi
           
-          echo "watchOS icon generation: SUCCESS ✅"
+          echo "watchOS icon generation: SUCCESS ✅" 

@@ -1,0 +1,32 @@
+name: App Icon Gen CI
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+  workflow_dispatch:
+
+jobs:
+  format-and-lint:
+    name: Format and Lint
+    uses: ./.github/workflows/format-and-lint.yml
+
+  copilot-review:
+    name: Request Copilot Review
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/copilot-pr-review.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+    needs: format-and-lint
+    secrets: inherit 
+
+  run-unit-tests:
+    name: Run Unit Tests
+    uses: ./.github/workflows/run-unit-tests.yml
+
+  run-integration-tests:
+    name: Run Integration Tests
+    needs: run-unit-tests
+    uses: ./.github/workflows/run-integration-tests.yml
+    
